@@ -1,0 +1,4 @@
+Build file '/home/runner/work/My-asc-android-app/My-asc-android-app/build.gradle.kts' line: 1
+ǰ What went wrong:
+Plugin [id: 'com.androi66d.application', version: '8.2.0', apply: false] was not found in any of the following sources:
+org.gradle.api.plugins.UnknownPluginException: Plugin [id: 'com.android.application', version: '8.2.0', apply: false] was not found in any of the following sources:

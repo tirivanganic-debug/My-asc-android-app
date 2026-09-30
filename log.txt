@@ -1,0 +1,232 @@
+build	Run gradle assembleDebug --stacktrace	﻿2026-09-30T20:54:38.0209280Z ##[group]Run gradle assembleDebug --stacktrace
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0209639Z ^[[36;1mgradle assembleDebug --stacktrace^[[0m
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0399750Z shell: /usr/bin/bash -e {0}
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0400001Z env:
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0400279Z   JAVA_HOME: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0400716Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Temurin-Hotspot_jdk/17.0.20-1/x64
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0401057Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0401314Z   GRADLE_USER_HOME: /home/runner/.gradle
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0401552Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0401800Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0402167Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0402552Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0402817Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.0403062Z ##[endgroup]
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.4687839Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.4717817Z Welcome to Gradle 8.7!
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.4747161Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.4747666Z Here are the highlights of this release:
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.4777621Z  - Compiling and testing with Java 22
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.4787402Z  - Cacheable Groovy script compilation
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.4827423Z  - New methods in lazy collection properties
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.4837337Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.4864584Z For more details see https://docs.gradle.org/8.7/release-notes.html
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.4877380Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:38.5644545Z Starting a Gradle Daemon (subsequent builds will be faster)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.6654650Z gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1790801682026.json
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7538055Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7567760Z FAILURE: Build failed with an exception.
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7596631Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7600230Z * Where:
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7600904Z Build file '/home/runner/work/My-asc-android-app/My-asc-android-app/build.gradle.kts' line: 1
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7601543Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7601757Z * What went wrong:
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7602464Z Plugin [id: 'com.android.application', version: '8.2.0', apply: false] was not found in any of the following sources:
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7603047Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7603391Z - Gradle Core Plugins (plugin is not in 'org.gradle' namespace)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7609537Z - Included Builds (No included builds contain this plugin)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7610615Z - Plugin Repositories (could not resolve plugin artifact 'com.android.application:com.android.application.gradle.plugin:8.2.0')
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7611690Z   Searched in the following repositories:
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7612280Z     Gradle Central Plugin Repository
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7612696Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7612973Z * Try:
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7613502Z > Run with --info or --debug option to get more log output.
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7614614Z > Run with --scan to get full insights.
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7615224Z > Get more help at https://help.gradle.org.
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7615662Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7615939Z * Exception is:
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7617091Z org.gradle.api.plugins.UnknownPluginException: Plugin [id: 'com.android.application', version: '8.2.0', apply: false] was not found in any of the following sources:
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7618077Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7618512Z - Gradle Core Plugins (plugin is not in 'org.gradle' namespace)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7619294Z - Included Builds (No included builds contain this plugin)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7620329Z - Plugin Repositories (could not resolve plugin artifact 'com.android.application:com.android.application.gradle.plugin:8.2.0')
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7621326Z   Searched in the following repositories:
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7621933Z     Gradle Central Plugin Repository
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7622889Z 	at org.gradle.plugin.use.resolve.internal.PluginResolutionResult.getFound(PluginResolutionResult.java:112)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7624394Z 	at org.gradle.plugin.use.internal.DefaultPluginRequestApplicator.resolvePluginRequest(DefaultPluginRequestApplicator.java:192)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7626335Z 	at org.gradle.plugin.use.internal.DefaultPluginRequestApplicator.applyPlugins(DefaultPluginRequestApplicator.java:97)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7627786Z 	at org.gradle.kotlin.dsl.provider.PluginRequestsHandler.handle(PluginRequestsHandler.kt:45)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7629119Z 	at org.gradle.kotlin.dsl.provider.StandardKotlinScriptEvaluator$InterpreterHost.applyPluginsTo(KotlinScriptEvaluator.kt:212)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7630431Z 	at org.gradle.kotlin.dsl.execution.Interpreter$ProgramHost.applyPluginsTo(Interpreter.kt:385)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7631270Z 	at Program.execute(Unknown Source)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7632018Z 	at org.gradle.kotlin.dsl.execution.Interpreter$ProgramHost.eval(Interpreter.kt:514)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7633030Z 	at org.gradle.kotlin.dsl.execution.Interpreter.eval(Interpreter.kt:213)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7634114Z 	at org.gradle.kotlin.dsl.provider.StandardKotlinScriptEvaluator.evaluate(KotlinScriptEvaluator.kt:118)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7635438Z 	at org.gradle.kotlin.dsl.provider.KotlinScriptPluginFactory$create$1.invoke(KotlinScriptPluginFactory.kt:51)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7636768Z 	at org.gradle.kotlin.dsl.provider.KotlinScriptPluginFactory$create$1.invoke(KotlinScriptPluginFactory.kt:48)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7638541Z 	at org.gradle.kotlin.dsl.provider.KotlinScriptPlugin.apply(KotlinScriptPlugin.kt:35)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7639664Z 	at org.gradle.configuration.BuildOperationScriptPlugin$1.run(BuildOperationScriptPlugin.java:68)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7640931Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:29)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7642255Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:26)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7643528Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7644832Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7646162Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7647794Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7649109Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:47)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7650457Z 	at org.gradle.internal.operations.DefaultBuildOperationExecutor.run(DefaultBuildOperationExecutor.java:68)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7651787Z 	at org.gradle.configuration.BuildOperationScriptPlugin.lambda$apply$0(BuildOperationScriptPlugin.java:65)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7653121Z 	at org.gradle.internal.code.DefaultUserCodeApplicationContext.apply(DefaultUserCodeApplicationContext.java:43)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7654410Z 	at org.gradle.configuration.BuildOperationScriptPlugin.apply(BuildOperationScriptPlugin.java:65)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7656164Z 	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.lambda$applyToMutableState$1(DefaultProjectStateRegistry.java:407)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7658016Z 	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.fromMutableState(DefaultProjectStateRegistry.java:425)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7659623Z 	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.applyToMutableState(DefaultProjectStateRegistry.java:406)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7661025Z 	at org.gradle.configuration.project.BuildScriptProcessor.execute(BuildScriptProcessor.java:46)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7662210Z 	at org.gradle.configuration.project.BuildScriptProcessor.execute(BuildScriptProcessor.java:27)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7663557Z 	at org.gradle.configuration.project.ConfigureActionsProjectEvaluator.evaluate(ConfigureActionsProjectEvaluator.java:35)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7665087Z 	at org.gradle.configuration.project.LifecycleProjectEvaluator$EvaluateProject.lambda$run$0(LifecycleProjectEvaluator.java:109)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7667034Z 	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.lambda$applyToMutableState$1(DefaultProjectStateRegistry.java:407)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7668738Z 	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.lambda$fromMutableState$2(DefaultProjectStateRegistry.java:430)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7670281Z 	at org.gradle.internal.work.DefaultWorkerLeaseService.withReplacedLocks(DefaultWorkerLeaseService.java:360)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7671759Z 	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.fromMutableState(DefaultProjectStateRegistry.java:430)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7673359Z 	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.applyToMutableState(DefaultProjectStateRegistry.java:406)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7674893Z 	at org.gradle.configuration.project.LifecycleProjectEvaluator$EvaluateProject.run(LifecycleProjectEvaluator.java:100)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7676247Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:29)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7677671Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:26)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7679015Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7680344Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7681638Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7683093Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7684479Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:47)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7685754Z 	at org.gradle.internal.operations.DefaultBuildOperationExecutor.run(DefaultBuildOperationExecutor.java:68)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7687201Z 	at org.gradle.configuration.project.LifecycleProjectEvaluator.evaluate(LifecycleProjectEvaluator.java:72)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7688440Z 	at org.gradle.api.internal.project.DefaultProject.evaluate(DefaultProject.java:785)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7689331Z 	at org.gradle.api.internal.project.DefaultProject.evaluate(DefaultProject.java:155)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7690440Z 	at org.gradle.api.internal.project.ProjectLifecycleController.lambda$ensureSelfConfigured$2(ProjectLifecycleController.java:84)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7691714Z 	at org.gradle.internal.model.StateTransitionController.lambda$doTransition$14(StateTransitionController.java:255)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7692879Z 	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7693964Z 	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:254)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7695452Z 	at org.gradle.internal.model.StateTransitionController.lambda$maybeTransitionIfNotCurrentlyTransitioning$10(StateTransitionController.java:199)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7696588Z 	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:34)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7697910Z 	at org.gradle.internal.model.StateTransitionController.maybeTransitionIfNotCurrentlyTransitioning(StateTransitionController.java:195)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7699301Z 	at org.gradle.api.internal.project.ProjectLifecycleController.ensureSelfConfigured(ProjectLifecycleController.java:84)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7700673Z 	at org.gradle.api.internal.project.DefaultProjectStateRegistry$ProjectStateImpl.ensureConfigured(DefaultProjectStateRegistry.java:381)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7701882Z 	at org.gradle.execution.TaskPathProjectEvaluator.configure(TaskPathProjectEvaluator.java:34)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7702914Z 	at org.gradle.execution.TaskPathProjectEvaluator.configureHierarchy(TaskPathProjectEvaluator.java:48)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7704177Z 	at org.gradle.configuration.DefaultProjectsPreparer.prepareProjects(DefaultProjectsPreparer.java:42)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7705415Z 	at org.gradle.configuration.BuildTreePreparingProjectsPreparer.prepareProjects(BuildTreePreparingProjectsPreparer.java:65)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7706805Z 	at org.gradle.configuration.BuildOperationFiringProjectsPreparer$ConfigureBuild.run(BuildOperationFiringProjectsPreparer.java:52)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7708178Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:29)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7709325Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$1.execute(DefaultBuildOperationRunner.java:26)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7710427Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7711529Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7712663Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7713815Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7714928Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.run(DefaultBuildOperationRunner.java:47)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7716019Z 	at org.gradle.internal.operations.DefaultBuildOperationExecutor.run(DefaultBuildOperationExecutor.java:68)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7717458Z 	at org.gradle.configuration.BuildOperationFiringProjectsPreparer.prepareProjects(BuildOperationFiringProjectsPreparer.java:40)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7718853Z 	at org.gradle.initialization.VintageBuildModelController.lambda$prepareProjects$2(VintageBuildModelController.java:84)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7720016Z 	at org.gradle.internal.model.StateTransitionController.lambda$doTransition$14(StateTransitionController.java:255)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7721120Z 	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7722195Z 	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:254)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7723370Z 	at org.gradle.internal.model.StateTransitionController.lambda$transitionIfNotPreviously$11(StateTransitionController.java:213)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7724448Z 	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:34)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7725497Z 	at org.gradle.internal.model.StateTransitionController.transitionIfNotPreviously(StateTransitionController.java:209)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7726722Z 	at org.gradle.initialization.VintageBuildModelController.prepareProjects(VintageBuildModelController.java:84)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7728075Z 	at org.gradle.initialization.VintageBuildModelController.prepareToScheduleTasks(VintageBuildModelController.java:71)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7729456Z 	at org.gradle.internal.build.DefaultBuildLifecycleController.lambda$prepareToScheduleTasks$6(DefaultBuildLifecycleController.java:175)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7730903Z 	at org.gradle.internal.model.StateTransitionController.lambda$doTransition$14(StateTransitionController.java:255)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7731990Z 	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7733104Z 	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:254)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7734227Z 	at org.gradle.internal.model.StateTransitionController.lambda$maybeTransition$9(StateTransitionController.java:190)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7735241Z 	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:34)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7736231Z 	at org.gradle.internal.model.StateTransitionController.maybeTransition(StateTransitionController.java:186)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7737616Z 	at org.gradle.internal.build.DefaultBuildLifecycleController.prepareToScheduleTasks(DefaultBuildLifecycleController.java:173)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7739189Z 	at org.gradle.internal.buildtree.DefaultBuildTreeWorkPreparer.scheduleRequestedTasks(DefaultBuildTreeWorkPreparer.java:36)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7740612Z 	at org.gradle.configurationcache.VintageBuildTreeWorkController$scheduleAndRunRequestedTasks$1.apply(VintageBuildTreeWorkController.kt:36)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7742094Z 	at org.gradle.configurationcache.VintageBuildTreeWorkController$scheduleAndRunRequestedTasks$1.apply(VintageBuildTreeWorkController.kt:35)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7743496Z 	at org.gradle.composite.internal.DefaultIncludedBuildTaskGraph.withNewWorkGraph(DefaultIncludedBuildTaskGraph.java:112)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7744931Z 	at org.gradle.configurationcache.VintageBuildTreeWorkController.scheduleAndRunRequestedTasks(VintageBuildTreeWorkController.kt:35)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7746470Z 	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.lambda$scheduleAndRunTasks$1(DefaultBuildTreeLifecycleController.java:77)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7748087Z 	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.lambda$runBuild$4(DefaultBuildTreeLifecycleController.java:120)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7749372Z 	at org.gradle.internal.model.StateTransitionController.lambda$transition$6(StateTransitionController.java:169)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7750494Z 	at org.gradle.internal.model.StateTransitionController.doTransition(StateTransitionController.java:266)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7751585Z 	at org.gradle.internal.model.StateTransitionController.lambda$transition$7(StateTransitionController.java:169)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7752516Z 	at org.gradle.internal.work.DefaultSynchronizer.withLock(DefaultSynchronizer.java:44)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7753497Z 	at org.gradle.internal.model.StateTransitionController.transition(StateTransitionController.java:169)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7754744Z 	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.runBuild(DefaultBuildTreeLifecycleController.java:117)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7756236Z 	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.scheduleAndRunTasks(DefaultBuildTreeLifecycleController.java:77)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7757913Z 	at org.gradle.internal.buildtree.DefaultBuildTreeLifecycleController.scheduleAndRunTasks(DefaultBuildTreeLifecycleController.java:72)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7759260Z 	at org.gradle.tooling.internal.provider.ExecuteBuildActionRunner.run(ExecuteBuildActionRunner.java:31)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7760296Z 	at org.gradle.launcher.exec.ChainingBuildActionRunner.run(ChainingBuildActionRunner.java:35)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7761422Z 	at org.gradle.internal.buildtree.ProblemReportingBuildActionRunner.run(ProblemReportingBuildActionRunner.java:49)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7762734Z 	at org.gradle.launcher.exec.BuildOutcomeReportingBuildActionRunner.run(BuildOutcomeReportingBuildActionRunner.java:65)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7764164Z 	at org.gradle.tooling.internal.provider.FileSystemWatchingBuildActionRunner.run(FileSystemWatchingBuildActionRunner.java:140)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7765745Z 	at org.gradle.launcher.exec.BuildCompletionNotifyingBuildActionRunner.run(BuildCompletionNotifyingBuildActionRunner.java:41)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7767283Z 	at org.gradle.launcher.exec.RootBuildLifecycleBuildActionExecutor.lambda$execute$0(RootBuildLifecycleBuildActionExecutor.java:40)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7768478Z 	at org.gradle.composite.internal.DefaultRootBuildState.run(DefaultRootBuildState.java:123)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7769645Z 	at org.gradle.launcher.exec.RootBuildLifecycleBuildActionExecutor.execute(RootBuildLifecycleBuildActionExecutor.java:40)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7771029Z 	at org.gradle.internal.buildtree.InitDeprecationLoggingActionExecutor.execute(InitDeprecationLoggingActionExecutor.java:66)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7772128Z 	at org.gradle.internal.buildtree.InitProblems.execute(InitProblems.java:36)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7773025Z 	at org.gradle.internal.buildtree.DefaultBuildTreeContext.execute(DefaultBuildTreeContext.java:40)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7774282Z 	at org.gradle.launcher.exec.BuildTreeLifecycleBuildActionExecutor.lambda$execute$0(BuildTreeLifecycleBuildActionExecutor.java:71)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7775587Z 	at org.gradle.internal.buildtree.BuildTreeState.run(BuildTreeState.java:60)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7776640Z 	at org.gradle.launcher.exec.BuildTreeLifecycleBuildActionExecutor.execute(BuildTreeLifecycleBuildActionExecutor.java:71)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7778122Z 	at org.gradle.launcher.exec.RunAsBuildOperationBuildActionExecutor$3.call(RunAsBuildOperationBuildActionExecutor.java:61)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7779456Z 	at org.gradle.launcher.exec.RunAsBuildOperationBuildActionExecutor$3.call(RunAsBuildOperationBuildActionExecutor.java:57)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7780879Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:200)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7782358Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:195)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7783641Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7784791Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7785935Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:157)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7787196Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7788322Z 	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7789434Z 	at org.gradle.internal.operations.DefaultBuildOperationExecutor.call(DefaultBuildOperationExecutor.java:73)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7790685Z 	at org.gradle.launcher.exec.RunAsBuildOperationBuildActionExecutor.execute(RunAsBuildOperationBuildActionExecutor.java:57)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7792053Z 	at org.gradle.launcher.exec.RunAsWorkerThreadBuildActionExecutor.lambda$execute$0(RunAsWorkerThreadBuildActionExecutor.java:36)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7793250Z 	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:264)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7794318Z 	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7795492Z 	at org.gradle.launcher.exec.RunAsWorkerThreadBuildActionExecutor.execute(RunAsWorkerThreadBuildActionExecutor.java:36)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7796873Z 	at org.gradle.tooling.internal.provider.continuous.ContinuousBuildActionExecutor.execute(ContinuousBuildActionExecutor.java:110)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7798391Z 	at org.gradle.tooling.internal.provider.SubscribableBuildActionExecutor.execute(SubscribableBuildActionExecutor.java:64)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7799590Z 	at org.gradle.internal.session.DefaultBuildSessionContext.execute(DefaultBuildSessionContext.java:46)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7800960Z 	at org.gradle.tooling.internal.provider.BuildSessionLifecycleBuildActionExecuter$ActionImpl.apply(BuildSessionLifecycleBuildActionExecuter.java:92)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7802778Z 	at org.gradle.tooling.internal.provider.BuildSessionLifecycleBuildActionExecuter$ActionImpl.apply(BuildSessionLifecycleBuildActionExecuter.java:80)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7803992Z 	at org.gradle.internal.session.BuildSessionState.run(BuildSessionState.java:71)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7805190Z 	at org.gradle.tooling.internal.provider.BuildSessionLifecycleBuildActionExecuter.execute(BuildSessionLifecycleBuildActionExecuter.java:62)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7806778Z 	at org.gradle.tooling.internal.provider.BuildSessionLifecycleBuildActionExecuter.execute(BuildSessionLifecycleBuildActionExecuter.java:41)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7808404Z 	at org.gradle.tooling.internal.provider.StartParamsValidatingActionExecuter.execute(StartParamsValidatingActionExecuter.java:64)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7809829Z 	at org.gradle.tooling.internal.provider.StartParamsValidatingActionExecuter.execute(StartParamsValidatingActionExecuter.java:32)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7811341Z 	at org.gradle.tooling.internal.provider.SessionFailureReportingActionExecuter.execute(SessionFailureReportingActionExecuter.java:51)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7813027Z 	at org.gradle.tooling.internal.provider.SessionFailureReportingActionExecuter.execute(SessionFailureReportingActionExecuter.java:39)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7814386Z 	at org.gradle.tooling.internal.provider.SetupLoggingActionExecuter.execute(SetupLoggingActionExecuter.java:47)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7815609Z 	at org.gradle.tooling.internal.provider.SetupLoggingActionExecuter.execute(SetupLoggingActionExecuter.java:31)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7816634Z 	at org.gradle.launcher.daemon.server.exec.ExecuteBuild.doBuild(ExecuteBuild.java:65)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7817667Z 	at org.gradle.launcher.daemon.server.exec.BuildCommandOnly.execute(BuildCommandOnly.java:37)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7818712Z 	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7819811Z 	at org.gradle.launcher.daemon.server.exec.WatchForDisconnection.execute(WatchForDisconnection.java:39)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7820905Z 	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7822009Z 	at org.gradle.launcher.daemon.server.exec.ResetDeprecationLogger.execute(ResetDeprecationLogger.java:29)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7823144Z 	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7824373Z 	at org.gradle.launcher.daemon.server.exec.RequestStopIfSingleUsedDaemon.execute(RequestStopIfSingleUsedDaemon.java:35)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7825584Z 	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7826631Z 	at org.gradle.launcher.daemon.server.exec.ForwardClientInput$2.create(ForwardClientInput.java:78)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7827724Z 	at org.gradle.launcher.daemon.server.exec.ForwardClientInput$2.create(ForwardClientInput.java:75)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7828504Z 	at org.gradle.util.internal.Swapper.swap(Swapper.java:38)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7829278Z 	at org.gradle.launcher.daemon.server.exec.ForwardClientInput.execute(ForwardClientInput.java:75)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7830364Z 	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7831394Z 	at org.gradle.launcher.daemon.server.exec.LogAndCheckHealth.execute(LogAndCheckHealth.java:64)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7832423Z 	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7833384Z 	at org.gradle.launcher.daemon.server.exec.LogToClient.doBuild(LogToClient.java:63)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7834265Z 	at org.gradle.launcher.daemon.server.exec.BuildCommandOnly.execute(BuildCommandOnly.java:37)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7835271Z 	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7836622Z 	at org.gradle.launcher.daemon.server.exec.EstablishBuildEnvironment.doBuild(EstablishBuildEnvironment.java:84)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7837862Z 	at org.gradle.launcher.daemon.server.exec.BuildCommandOnly.execute(BuildCommandOnly.java:37)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7838867Z 	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7839988Z 	at org.gradle.launcher.daemon.server.exec.StartBuildOrRespondWithBusy$1.run(StartBuildOrRespondWithBusy.java:52)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7841106Z 	at org.gradle.launcher.daemon.server.DaemonStateCoordinator$1.run(DaemonStateCoordinator.java:297)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7842126Z 	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7843174Z 	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7843729Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7843736Z 
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:56.7843857Z BUILD FAILED in 18s
+build	Run gradle assembleDebug --stacktrace	2026-09-30T20:54:57.0797470Z ##[error]Process completed with exit code 1.
