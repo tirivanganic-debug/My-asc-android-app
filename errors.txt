@@ -1,4 +1,15 @@
-Build file '/home/runner/work/My-asc-android-app/My-asc-android-app/build.gradle.kts' line: 1
-ǰ What went wrong:
-Plugin [id: 'com.androi66d.application', version: '8.2.0', apply: false] was not found in any of the following sources:
-org.gradle.api.plugins.UnknownPluginException: Plugin [id: 'com.android.application', version: '8.2.0', apply: false] was not found in any of the following sources:
+* What went wrong:
+Error resolving plugin [id: 'com.android.application', version: '8.7.2', apply: false]
+> The request for this plugin could not be satisfied because the plugin is already on the classpath with a dif
+
+* Try:
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+---- APP BUILD FILE ----
+plugins {
+    id("com.android.application") version "8.7.2" apply false
+    id("org.jetbrains.kotlin.android") version "2.0.21" apply false
+    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21" apply false
+}
+---- ROOT BUILD FILE ----
+plugins { id("com.android.application") version "8.2.0" apply false }
