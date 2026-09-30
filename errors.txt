@@ -1,15 +1,25 @@
+ - Better configuration cache reports
+
+For more details see https://docs.gradle.org/8.10.2/release-notes.html
+
+Starting a Gradle Daemon (subsequent builds will be faster)
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1790805781923.json
+
+FAILURE: Build failed with an exception.
+
 * What went wrong:
-Error resolving plugin [id: 'com.android.application', version: '8.7.2', apply: false]
-> The request for this plugin could not be satisfied because the plugin is already on the classpath with a dif
+A problem occurred configuring project ':app'.
+> compileSdkVersion is not specified. Please add it to build.gradle
 
 * Try:
 > Run with --info or --debug option to get more log output.
 > Run with --scan to get full insights.
----- APP BUILD FILE ----
-plugins {
-    id("com.android.application") version "8.7.2" apply false
-    id("org.jetbrains.kotlin.android") version "2.0.21" apply false
-    id("org.jetbrains.kotlin.plugin.compose") version "2.0.21" apply false
-}
----- ROOT BUILD FILE ----
-plugins { id("com.android.application") version "8.2.0" apply false }
+> Get more help at https://help.gradle.org.
+
+* Exception is:
+org.gradle.api.ProjectConfigurationException: A problem occurred configuring project ':app'.
+Caused by: com.android.builder.errors.EvalIssueException: compileSdkVersion is not specified. Please add it to build.gradle
+
+
+BUILD FAILED in 1m
+##[error]Process completed with exit code 1.
