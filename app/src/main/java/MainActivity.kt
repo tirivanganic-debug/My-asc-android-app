@@ -1,5 +1,7 @@
 package com.ascendant.sentiment
 
+import androidx.compose.foundation.clickable
+
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
