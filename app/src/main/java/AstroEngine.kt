@@ -38,6 +38,10 @@ object AstroEngine {
     private val CONJ_POS = setOf("Moon", "Mercury", "Venus", "Jupiter", "Uranus", "Neptune")
     private val POS_45 = setOf("Moon", "Mercury", "Sun", "Mars", "Uranus")
 
+    // v2.0: neutral planets that turn negative on 72° / 144° when under hard aspect
+    private val NEUTRAL_PLANETS = setOf("Moon", "Mercury", "Sun", "Mars", "Uranus")
+    private val HARD_ANGLES = NEGATIVE_ANGLES // 45, 90, 135, 150, 180 (planet-to-planet)
+
     private val EL = mapOf(
         "Mercury" to doubleArrayOf(48.3313, 3.24587e-5, 7.0047, 5e-8, 29.1241, 1.01444e-5, 0.387098, 0.0, 0.205635, 5.59e-10, 168.6562, 4.0923344368),
         "Venus" to doubleArrayOf(76.6799, 2.4659e-5, 3.3946, 2.75e-8, 54.891, 1.38374e-5, 0.72333, 0.0, 0.006773, -1.302e-9, 48.0052, 1.6021302244),
@@ -169,7 +173,33 @@ object AstroEngine {
 
     fun sep(a: Double, b: Double): Double = abs(((a - b + 540.0) % 360.0) - 180.0)
 
-    fun getPolarity(name: String, aspectAngle: Int, defaultPol: Int): Int {
+    /**
+     * v2.0 rule: returns the neutral planets (Moon, Mercury, Sun, Mars, Uranus) that are
+     * currently in a hard aspect with a Sp -1 planet (Pluto, Saturn) or with another
+     * neutral planet. Their 72° and 144° aspects to the Ascendant then become Sp -1.
+     */
+    fun stressedNeutrals(longs: DoubleArray, orb: Double): Set<String> {
+        val out = mutableSetOf<String>()
+        for (i in PLANETS.indices) {
+            val p = PLANETS[i]
+            if (p.name !in NEUTRAL_PLANETS) continue
+            for (j in PLANETS.indices) {
+                if (j == i) continue
+                val q = PLANETS[j]
+                val isSource = q.defaultPolarity == -1 || q.name in NEUTRAL_PLANETS
+                if (!isSource) continue
+                val s = sep(longs[i], longs[j])
+                if (HARD_ANGLES.any { abs(s - it) <= orb }) {
+                    out.add(p.name)
+                    break
+                }
+            }
+        }
+        return out
+    }
+
+    fun getPolarity(name: String, aspectAngle: Int, defaultPol: Int, stressed: Boolean = false): Int {
+        if (stressed && (aspectAngle == 72 || aspectAngle == 144)) return -1
         if (aspectAngle == 0) return if (CONJ_POS.contains(name)) 1 else -1
         if (aspectAngle == 45 && POS_45.contains(name)) return 1
         if ((name == "Mars" || name == "Sun") && NEGATIVE_ANGLES.contains(aspectAngle)) return -1
@@ -178,12 +208,13 @@ object AstroEngine {
 
     fun calculateAspects(asDeg: Double, planetLongs: DoubleArray, orbLimit: Double = 3.0): List<AspectInfo> {
         val list = mutableListOf<AspectInfo>()
+        val stressed = stressedNeutrals(planetLongs, orbLimit)
         PLANETS.forEachIndexed { k, planet ->
             val sp = sep(asDeg, planetLongs[k])
             ANGLES.forEach { A ->
                 val d = abs(sp - A)
                 if (d <= orbLimit) {
-                    val s = getPolarity(planet.name, A, planet.defaultPolarity)
+                    val s = getPolarity(planet.name, A, planet.defaultPolarity, planet.name in stressed)
                     var c = (if (s < 0) RED_COEFFS else GREEN_COEFFS)[A] ?: 0.24
                     if (planet.defaultPolarity == 0 && A == 150) c = 0.38
                     list.add(
@@ -243,6 +274,7 @@ object AstroEngine {
         for (i in 0 until series.size - 1) {
             val a = series[i]
             val b = series[i + 1]
+            val stressed = stressedNeutrals(a.planetaryLongitudes, orbLimit)
             PLANETS.forEachIndexed { k, planet ->
                 val sa = sep(a.ascDegree, a.planetaryLongitudes[k])
                 val sb = sep(b.ascDegree, b.planetaryLongitudes[k])
@@ -250,7 +282,7 @@ object AstroEngine {
                     val fa = sa - A
                     val fb = sb - A
                     if (fa * fb < 0 && abs(fa) < 8 && abs(fb) < 8) {
-                        val s = getPolarity(planet.name, A, planet.defaultPolarity)
+                        val s = getPolarity(planet.name, A, planet.defaultPolarity, planet.name in stressed)
                         var c = (if (s < 0) RED_COEFFS else GREEN_COEFFS)[A] ?: 0.24
                         if (planet.defaultPolarity == 0 && A == 150) c = 0.38
                         val exactT = (a.timeMs + (fa / (fa - fb)) * 300_000).toLong()

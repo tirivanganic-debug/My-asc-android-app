@@ -1,7 +1,5 @@
 package com.ascendant.sentiment.ui
 
-import kotlin.math.abs
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,6 +25,7 @@ import com.ascendant.sentiment.model.*
 import com.ascendant.sentiment.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.abs
 
 @Composable
 fun SentimentGaugeCard(
@@ -152,73 +151,73 @@ fun SentimentGaugeCard(
     }
 }
 
+/**
+ * v2.0: Active Ascendant Aspects, drawn as the BACK layer of the sentiment chart.
+ * The chart sits on top of this with a semi-transparent background.
+ */
 @Composable
-fun ActiveAspectsCard(aspects: List<AspectInfo>) {
+fun ActiveAspectsLayer(aspects: List<AspectInfo>, modifier: Modifier = Modifier) {
     val sorted = aspects.sortedByDescending { abs(it.contribution) }
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = CardDark),
-        shape = RoundedCornerShape(16.dp),
-        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(BorderDark))
+    Column(
+        modifier = modifier
+            .background(BgDark)
+            .padding(start = 46.dp, end = 16.dp, top = 14.dp, bottom = 28.dp)
     ) {
-        Column(modifier = Modifier.padding(14.dp)) {
+        Text(
+            text = "ACTIVE ASCENDANT ASPECTS (${aspects.size})",
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            color = Slate100
+        )
+
+        Spacer(modifier = Modifier.height(4.dp))
+
+        if (sorted.isEmpty()) {
             Text(
-                text = "ACTIVE ASCENDANT ASPECTS (${aspects.size})",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = Slate100
+                text = "No aspects within orb limit at this moment",
+                fontSize = 11.sp,
+                color = Slate400,
+                modifier = Modifier.padding(vertical = 8.dp)
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            if (sorted.isEmpty()) {
-                Text(
-                    text = "No aspects to the Ascendant within orb limit at this moment",
-                    fontSize = 11.sp,
-                    color = Slate400,
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-            } else {
-                sorted.forEach { aspect ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = aspect.glyph,
-                                fontSize = 16.sp,
-                                color = Amber500,
-                                modifier = Modifier.width(24.dp)
-                            )
-                            Text(
-                                text = "${aspect.planetName} ${aspect.aspectAngle}°",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Slate100
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "(orb %.2f°)".format(aspect.orbDiff),
-                                fontSize = 10.sp,
-                                color = Slate400
-                            )
-                        }
-
-                        val contrib = aspect.contribution
+        } else {
+            sorted.forEach { aspect ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 3.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = if (contrib > 0) "+%.2f".format(contrib) else "%.2f".format(contrib),
-                            fontFamily = FontFamily.Monospace,
-                            fontWeight = FontWeight.Bold,
+                            text = aspect.glyph,
+                            fontSize = 15.sp,
+                            color = Amber500,
+                            modifier = Modifier.width(22.dp)
+                        )
+                        Text(
+                            text = "${aspect.planetName} ${aspect.aspectAngle}°",
                             fontSize = 12.sp,
-                            color = if (contrib > 0) Emerald400 else Rose400
+                            fontWeight = FontWeight.SemiBold,
+                            color = Slate100
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "(orb %.2f°)".format(aspect.orbDiff),
+                            fontSize = 10.sp,
+                            color = Slate400
                         )
                     }
-                    Divider(color = BorderDark.copy(alpha = 0.5f), thickness = 0.5.dp)
+
+                    val contrib = aspect.contribution
+                    Text(
+                        text = if (contrib > 0) "+%.2f".format(contrib) else "%.2f".format(contrib),
+                        fontFamily = FontFamily.Monospace,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 12.sp,
+                        color = if (contrib > 0) Emerald400 else Rose400
+                    )
                 }
             }
         }

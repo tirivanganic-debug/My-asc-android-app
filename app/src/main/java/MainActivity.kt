@@ -1,7 +1,5 @@
 package com.ascendant.sentiment
 
-import androidx.compose.foundation.clickable
-
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -12,6 +10,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -25,6 +24,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -196,7 +196,7 @@ fun MainScreen(
             }
         }
 
-        // Stepper & Live Controls
+        // Live & Location Controls
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = CardDark),
@@ -233,29 +233,6 @@ fun MainScreen(
                             color = if (isLive) Slate950 else Slate100,
                             fontWeight = FontWeight.Bold
                         )
-                    }
-
-                    // Steppers
-                    Row(
-                        modifier = Modifier.horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        listOf(-60 to "−1h", -5 to "−5m", 5 to "+5m", 60 to "+1h").forEach { (mins, label) ->
-                            OutlinedButton(
-                                onClick = {
-                                    onHaptic()
-                                    isLive = false
-                                    val newT = inspectedTimeMs + mins * 60_000L
-                                    centerTimeMs = newT
-                                    inspectedTimeMs = newT
-                                },
-                                shape = RoundedCornerShape(6.dp),
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
-                                modifier = Modifier.height(32.dp)
-                            ) {
-                                Text(label, fontSize = 11.sp, color = Slate100)
-                            }
-                        }
                     }
                 }
 
@@ -304,7 +281,7 @@ fun MainScreen(
             orbLimit = 3.0
         )
 
-        // 5-minute Sentiment Chart
+        // 5-minute Sentiment Chart (v2.0: Active Aspects behind it, step toggles below it)
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = CardDark),
@@ -320,20 +297,59 @@ fun MainScreen(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
 
-                SentimentChart(
-                    series = series,
-                    inspectedTimeMs = currentBar?.timeMs ?: inspectedTimeMs,
-                    onInspectTime = { t ->
-                        onHaptic()
-                        isLive = false
-                        inspectedTimeMs = t
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
+                ) {
+                    // Back layer: active aspects
+                    ActiveAspectsLayer(
+                        aspects = currentBar?.aspects ?: emptyList(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 260.dp)
+                    )
+                    // Front layer: semi-transparent bar chart
+                    SentimentChart(
+                        series = series,
+                        inspectedTimeMs = currentBar?.timeMs ?: inspectedTimeMs,
+                        onInspectTime = { t ->
+                            onHaptic()
+                            isLive = false
+                            inspectedTimeMs = t
+                        },
+                        modifier = Modifier.matchParentSize()
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Time stepper: moves the white vertical line back / forward
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf(-60 to "−1h", -5 to "−5m", 5 to "+5m", 60 to "+1h").forEach { (mins, label) ->
+                        OutlinedButton(
+                            onClick = {
+                                onHaptic()
+                                isLive = false
+                                val newT = inspectedTimeMs + mins * 60_000L
+                                centerTimeMs = newT
+                                inspectedTimeMs = newT
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(38.dp)
+                        ) {
+                            Text(label, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Slate100)
+                        }
                     }
-                )
+                }
             }
         }
-
-        // Active Aspects Table
-        ActiveAspectsCard(aspects = currentBar?.aspects ?: emptyList())
 
         // Exact Hits Card
         ExactHitsCard(

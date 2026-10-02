@@ -24,14 +24,12 @@ fun SentimentChart(
     series: List<SentimentBar>,
     inspectedTimeMs: Long,
     onInspectTime: (Long) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.fillMaxWidth().height(260.dp)
 ) {
     if (series.isEmpty()) return
 
     Canvas(
         modifier = modifier
-            .fillMaxWidth()
-            .height(260.dp)
             .pointerInput(series) {
                 detectTapGestures { offset ->
                     val plotWidth = size.width - 48.dp.toPx()
@@ -72,8 +70,8 @@ fun SentimentChart(
         val maxVal = max(0.5, (maxScore * 10).toInt() / 10.0 + 0.15)
         fun getY(v: Double): Float = (topMargin + (plotHeight / 2.0) * (1.0 - v / maxVal)).toFloat()
 
-        // Background
-        drawRect(color = BgDark, size = size)
+        // Background (v2.0: semi-transparent so the Active Aspects behind it show through)
+        drawRect(color = BgDark.copy(alpha = 0.55f), size = size)
 
         // Bullish Band
         val yBull = getY(0.15)
@@ -136,7 +134,7 @@ fun SentimentChart(
             val bHeight = maxOf(abs(yVal - yZero), if (bar.sentimentScore != 0.0) 1f else 0f)
 
             drawRect(
-                color = barColor,
+                color = barColor.copy(alpha = 0.8f),
                 topLeft = Offset(bx, bTop),
                 size = Size(maxOf(barWidth - 1f, 1.5f), bHeight)
             )
