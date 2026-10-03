@@ -26,8 +26,11 @@ object AstroEngine {
 
     val ANGLES = listOf(0, 30, 45, 60, 72, 90, 120, 135, 144, 150, 180)
 
-    // Hard aspects (used for the neutral-planet polarity rule)
+    // Hard aspects used for the neutral-planet polarity rule.
+    // Moon and Mercury are neutral by default but do NOT flip at 45°.
     val HARD_ANGLES = setOf(45, 90, 135, 150, 180)
+    private val NEUTRAL_HARD_ANGLES = HARD_ANGLES
+    private val MOON_MERCURY_HARD_ANGLES = setOf(90, 135, 150, 180)
 
     // Cj: aspect values, one column per planet class (from the Cj table)
     val GREEN_CJ = mapOf(
@@ -233,60 +236,109 @@ object AstroEngine {
     }
 
     /**
-     * A neutral planet is -1 if it is aspected by a Sp -1 planet (any aspect),
-     * or by a hard aspect from another neutral planet. Otherwise it is +1.
+     * Neutral-planet polarity is determined by the planet's aspect to the Ascendant.
+     *
+     * Neutral planets are +1 by default and become -1 when they make a hard
+     * aspect to the Ascendant: 90°, 135°, 150°, or 180°.
+     *
+     * The 45° hard aspect is included for other neutral planets, but is
+     * explicitly excluded for Moon and Mercury.
      */
-    private fun isTainted(i: Int, longs: DoubleArray, orbLimit: Double): Boolean {
-        for (j in PLANETS.indices) {
-            if (j == i) continue
-            val angles: Collection<Int> = when (PLANETS[j].defaultPolarity) {
-                -1 -> ANGLES
-                0 -> HARD_ANGLES
-                else -> emptyList()
-            }
-            val s = sep(longs[i], longs[j])
-            if (angles.any { abs(s - it) <= orbLimit }) return true
+    private fun neutralPolarityToAscendant(
+        planetIndex: Int,
+        ascDeg: Double,
+        longs: DoubleArray,
+        orbLimit: Double
+    ): Int {
+        val planet = PLANETS[planetIndex]
+        val hardAngles = if (planet.name == "Moon" || planet.name == "Mercury") {
+            MOON_MERCURY_HARD_ANGLES
+        } else {
+            NEUTRAL_HARD_ANGLES
         }
-        return false
+
+        val separation = sep(ascDeg, longs[planetIndex])
+        return if (hardAngles.any { abs(separation - it) <= orbLimit }) -1 else 1
     }
 
-    /** Sp for every planet at this moment: green +1, red -1, neutral +/-1 by the rule above. */
-    fun planetPolarities(longs: DoubleArray, orbLimit: Double): IntArray =
+    /** Sp for every planet: fixed planets retain their default polarity;
+     * neutral planets are +/-1 according to their aspect to the Ascendant.
+     */
+    fun planetPolarities(
+        ascDeg: Double,
+        longs: DoubleArray,
+        orbLimit: Double
+    ): IntArray =
         IntArray(PLANETS.size) { i ->
             val p = PLANETS[i]
-            if (p.defaultPolarity != 0) p.defaultPolarity
-            else if (isTainted(i, longs, orbLimit)) -1 else 1
+            if (p.defaultPolarity != 0) {
+                p.defaultPolarity
+            } else {
+                neutralPolarityToAscendant(i, ascDeg, longs, orbLimit)
+            }
         }
 
     /**
-     * Pm for every planet = Sum(Sp x Wp x Cj) over the planets aspecting it,
-     * divided by Sum(Wp) of those same aspecting planets (scaling).
-     * Sp = polarity of the aspecting planet, Wp = its (base) weight,
-     * Cj = aspect value from the column of the aspecting planet's class.
-     * Result is a weighted average, so it always lies between -0.875 and +0.875.
+     * Pm for a planet is the SUM of the signed planet-to-planet modifier
+     * contributions from all planets aspecting it.
+     *
+     * Each contribution is:
+     *     Sp × Wp × Cj
+     *
+     * The dynamic-weight calculation then normalizes this sum by the total
+     * base weight of the aspecting planets.
      */
     fun planetModifiers(longs: DoubleArray, pol: IntArray, orbLimit: Double): DoubleArray {
         val pm = DoubleArray(PLANETS.size)
         for (i in PLANETS.indices) {
-            var num = 0.0
-            var den = 0.0
+            var pmSum = 0.0
             for (j in PLANETS.indices) {
                 if (i == j) continue
-                val s = sep(longs[i], longs[j])
+                val separation = sep(longs[i], longs[j])
                 val q = PLANETS[j]
                 for (A in ANGLES) {
-                    if (abs(s - A) <= orbLimit) {
-                        num += pol[j] * q.weight * cjFor(q, A)
-                        den += q.weight
+                    if (abs(separation - A) <= orbLimit) {
+                        pmSum += pol[j] * q.weight * cjFor(q, A)
                     }
                 }
             }
-            pm[i] = if (den > 0.0) num / den else 0.0
+            pm[i] = pmSum
         }
         return pm
     }
 
-    /** Dynamic weight = (Wp x Sd) + Pm (scaled), with the Sd and Pm parts switchable. */
+    /**
+     * Sum of the base weights of the planets aspecting each planet.
+     * This is the denominator in the Pm dynamic-weight formula.
+     */
+    private fun aspectingPlanetWeightSums(longs: DoubleArray, orbLimit: Double): DoubleArray {
+        val sums = DoubleArray(PLANETS.size)
+        for (i in PLANETS.indices) {
+            var sumWp = 0.0
+            for (j in PLANETS.indices) {
+                if (i == j) continue
+                val separation = sep(longs[i], longs[j])
+                for (A in ANGLES) {
+                    if (abs(separation - A) <= orbLimit) {
+                        sumWp += PLANETS[j].weight
+                    }
+                }
+            }
+            sums[i] = sumWp
+        }
+        return sums
+    }
+
+    /**
+     * Dynamic weight:
+     *
+     *     Dynamic weight = (Wp × Sd) ×
+     *                      (SUM(Pm) ÷ SUM(Wp of aspecting planets))
+     *
+     * If Pm is disabled, the Pm multiplier is treated as 1.0.
+     * If there are no aspecting planets, the Pm multiplier is also treated
+     * as 1.0 so an isolated planet retains its Wp × Sd weight.
+     */
     fun dynamicWeights(
         longs: DoubleArray,
         pol: IntArray,
@@ -295,10 +347,20 @@ object AstroEngine {
         usePm: Boolean
     ): DoubleArray {
         val pm = if (usePm) planetModifiers(longs, pol, orbLimit) else null
+        val aspectingWp = if (usePm) aspectingPlanetWeightSums(longs, orbLimit) else null
+
         return DoubleArray(PLANETS.size) { i ->
             val p = PLANETS[i]
             val sd = if (useSd) signDignity(p.name, longs[i]) else 1.0
-            max(MIN_DYNAMIC_WEIGHT, p.weight * sd + (pm?.get(i) ?: 0.0))
+
+            val pmFactor = if (!usePm) {
+                1.0
+            } else {
+                val denominator = aspectingWp!![i]
+                if (denominator > 0.0) pm!![i] / denominator else 1.0
+            }
+
+            max(MIN_DYNAMIC_WEIGHT, (p.weight * sd) * pmFactor)
         }
     }
 
@@ -310,7 +372,7 @@ object AstroEngine {
         usePm: Boolean = true
     ): List<AspectInfo> {
         val list = mutableListOf<AspectInfo>()
-        val pol = planetPolarities(planetLongs, orbLimit)
+        val pol = planetPolarities(asDeg, planetLongs, orbLimit)
         val dw = dynamicWeights(planetLongs, pol, orbLimit, useSd, usePm)
         PLANETS.forEachIndexed { k, planet ->
             val sp = sep(asDeg, planetLongs[k])
@@ -378,7 +440,7 @@ object AstroEngine {
         for (i in 0 until series.size - 1) {
             val a = series[i]
             val b = series[i + 1]
-            val pol = planetPolarities(a.planetaryLongitudes, orbLimit)
+            val pol = planetPolarities(a.ascDegree, a.planetaryLongitudes, orbLimit)
             PLANETS.forEachIndexed { k, planet ->
                 val sa = sep(a.ascDegree, a.planetaryLongitudes[k])
                 val sb = sep(b.ascDegree, b.planetaryLongitudes[k])
