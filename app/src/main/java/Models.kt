@@ -15,7 +15,7 @@ data class AspectInfo(
     val orbDiff: Double,
     val polarity: Int,
     val coeff: Double,
-    val dynWeight: Double = weight.toDouble() // Dynamic weight: (Wp x Sd) x (sum(Pm) / sum(Wp of aspecting planets))
+    val dynWeight: Double = weight.toDouble() // v3.0: dynamic weight (Wp x Sd + Pm)
 ) {
     val contribution: Double
         get() = polarity * dynWeight * coeff
