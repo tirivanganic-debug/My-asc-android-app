@@ -88,8 +88,6 @@ fun MainScreen(
     var windowHours by remember { mutableIntStateOf(6) }
     var selectedLocationIdx by remember { mutableIntStateOf(0) }
     var selectedTimezone by remember { mutableStateOf("Europe/London") }
-    var useSd by remember { mutableStateOf(true) }   // v3.0: sign dignity switch
-    var usePm by remember { mutableStateOf(true) }   // v3.0: planet-to-planet modifier switch
 
     val locations = AstroEngine.PRESET_LOCATIONS
     val activeLocation = locations[selectedLocationIdx]
@@ -109,15 +107,13 @@ fun MainScreen(
     }
 
     // Planetary series calculation (100% offline pure Kotlin)
-    val series = remember(centerTimeMs, windowHours, activeLocation, useSd, usePm) {
+    val series = remember(centerTimeMs, windowHours, activeLocation) {
         AstroEngine.generateSeries(
             centerMs = centerTimeMs,
             windowHours = windowHours,
             lat = activeLocation.lat,
             lon = activeLocation.lon,
-            orbLimit = 3.0,
-            useSd = useSd,
-            usePm = usePm
+            orbLimit = 3.0
         )
     }
 
@@ -272,44 +268,6 @@ fun MainScreen(
                                 )
                             }
                         }
-                    }
-                }
-
-                // v3.0: model switches, turn both off to see the original formula
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Switch(
-                            checked = useSd,
-                            onCheckedChange = {
-                                onHaptic()
-                                useSd = it
-                            },
-                            colors = SwitchDefaults.colors(checkedTrackColor = Emerald500)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Sd  sign dignity", fontSize = 11.sp, color = Slate100)
-                    }
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Switch(
-                            checked = usePm,
-                            onCheckedChange = {
-                                onHaptic()
-                                usePm = it
-                            },
-                            colors = SwitchDefaults.colors(checkedTrackColor = Emerald500)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Pm  planet aspects", fontSize = 11.sp, color = Slate100)
                     }
                 }
             }

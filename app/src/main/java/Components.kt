@@ -208,13 +208,6 @@ fun ActiveAspectsLayer(aspects: List<AspectInfo>, modifier: Modifier = Modifier)
                             fontSize = 10.sp,
                             color = Slate400
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = "W %.1f".format(aspect.dynWeight),
-                            fontSize = 10.sp,
-                            fontFamily = FontFamily.Monospace,
-                            color = Slate400
-                        )
                     }
 
                     val contrib = aspect.contribution
