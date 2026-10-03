@@ -9,38 +9,77 @@ object AstroEngine {
     private fun sn(x: Double): Double = sin(x * R)
     private fun cs(x: Double): Double = cos(x * R)
 
+    // Wp: planet weights from the weights table.
+    // 3rd value = Wp, 4th value = class: 1 green (Sp +1), 0 neutral (Sp +/-1), -1 red (Sp -1)
     val PLANETS = listOf(
-        PlanetDef("Pluto", "♇", 6, -1),
-        PlanetDef("Mercury", "☿", 5, 0),
-        PlanetDef("Mars", "♂", 4, 1),
-        PlanetDef("Moon", "☽", 3, 0),
-        PlanetDef("Saturn", "♄", 4, -1),
-        PlanetDef("Sun", "☉", 3, 1),
-        PlanetDef("Venus", "♀", 4, 1),
-        PlanetDef("Uranus", "♅", 3, 0),
-        PlanetDef("Jupiter", "♃", 3, 1),
-        PlanetDef("Neptune", "♆", 2, 1)
+        PlanetDef("Pluto", "♇", 10, -1),
+        PlanetDef("Mercury", "☿", 9, 0),
+        PlanetDef("Saturn", "♄", 8, -1),
+        PlanetDef("Mars", "♂", 7, 0),
+        PlanetDef("Venus", "♀", 6, 1),
+        PlanetDef("Moon", "☽", 5, 0),
+        PlanetDef("Jupiter", "♃", 4, 1),
+        PlanetDef("Sun", "☉", 3, 0),
+        PlanetDef("Uranus", "♅", 2, 0),
+        PlanetDef("Neptune", "♆", 1, 1)
     )
 
     val ANGLES = listOf(0, 30, 45, 60, 72, 90, 120, 135, 144, 150, 180)
-    val NEGATIVE_ANGLES = setOf(45, 90, 135, 150, 180)
 
-    val RED_COEFFS = mapOf(
-        0 to 0.50, 45 to 0.50, 90 to 0.62, 135 to 0.50, 150 to 0.50, 180 to 0.24,
-        30 to 0.24, 72 to 0.38, 60 to 0.38, 120 to 0.24, 144 to 0.24
+    // Hard aspects (used for the neutral-planet polarity rule)
+    val HARD_ANGLES = setOf(45, 90, 135, 150, 180)
+
+    // Cj: aspect values, one column per planet class (from the Cj table)
+    val GREEN_CJ = mapOf(
+        0 to 0.5, 30 to 0.5, 45 to 0.625, 60 to 0.75, 72 to 0.25, 90 to 0.375, 120 to 0.5, 135 to 0.25, 144 to 0.125, 150 to 0.25, 180 to 0.125
     )
 
-    val GREEN_COEFFS = mapOf(
-        0 to 0.50, 60 to 0.85, 45 to 0.50, 120 to 0.62, 30 to 0.24, 72 to 0.38,
-        144 to 0.24, 90 to 0.38, 135 to 0.24, 150 to 0.24, 180 to 0.24
+    val NEUTRAL_CJ = mapOf(
+        0 to 0.5, 30 to 0.5, 45 to 0.625, 60 to 0.75, 72 to 0.25, 90 to 0.875, 120 to 0.5, 135 to 0.375, 144 to 0.125, 150 to 0.25, 180 to 0.125
     )
 
-    private val CONJ_POS = setOf("Moon", "Mercury", "Venus", "Jupiter", "Uranus", "Neptune")
-    private val POS_45 = setOf("Moon", "Mercury", "Sun", "Mars", "Uranus")
+    val RED_CJ = mapOf(
+        0 to 0.5, 30 to 0.625, 45 to 0.75, 60 to 0.375, 72 to 0.25, 90 to 0.875, 120 to 0.25, 135 to 0.5, 144 to 0.125, 150 to 0.375, 180 to 0.25
+    )
 
-    // v2.0: neutral planets that turn negative on 72° / 144° when under hard aspect
-    private val NEUTRAL_PLANETS = setOf("Moon", "Mercury", "Sun", "Mars", "Uranus")
-    private val HARD_ANGLES = NEGATIVE_ANGLES // 45, 90, 135, 150, 180 (planet-to-planet)
+    // Sd: sign dignity values. Listed = fall/detriment or domicile/exaltation; everything else is neutral.
+    private const val SD_FALL = 0.875
+    private const val SD_NEUTRAL = 1.0
+    private const val SD_DOM = 1.125
+
+    // Safety floor only. With Pm scaled by the aspecting planets' weights, |Pm| <= 0.875 and
+    // Wp x Sd >= 0.875, so the dynamic weight can never actually reach below zero.
+    private const val MIN_DYNAMIC_WEIGHT = 0.0
+
+    private val SD_FALL_BY_SIGN: List<Set<String>> = listOf(
+        setOf("Moon", "Saturn", "Venus"),  // Aries
+        setOf("Mars", "Pluto", "Uranus"),  // Taurus
+        setOf("Jupiter"),  // Gemini
+        setOf("Mars", "Mercury", "Saturn"),  // Cancer
+        setOf("Mercury", "Saturn", "Uranus"),  // Leo
+        setOf("Jupiter", "Neptune"),  // Virgo
+        setOf("Mars", "Pluto", "Sun"),  // Libra
+        setOf("Moon", "Venus"),  // Scorpio
+        setOf("Mercury", "Uranus"),  // Sagittarius
+        setOf("Jupiter", "Moon", "Neptune", "Venus"),  // Capricorn
+        setOf("Pluto", "Sun"),  // Aquarius
+        setOf("Mercury")  // Pisces
+    )
+
+    private val SD_DOM_BY_SIGN: List<Set<String>> = listOf(
+        setOf("Mars", "Pluto", "Sun"),  // Aries
+        setOf("Moon", "Venus"),  // Taurus
+        setOf("Mercury", "Saturn", "Uranus"),  // Gemini
+        setOf("Jupiter", "Moon", "Neptune", "Venus"),  // Cancer
+        setOf("Pluto", "Sun"),  // Leo
+        setOf("Mercury"),  // Virgo
+        setOf("Moon", "Saturn", "Venus"),  // Libra
+        setOf("Mars", "Pluto", "Uranus"),  // Scorpio
+        setOf("Jupiter"),  // Sagittarius
+        setOf("Mars", "Mercury", "Saturn"),  // Capricorn
+        setOf("Jupiter", "Mercury", "Saturn", "Uranus"),  // Aquarius
+        setOf("Jupiter", "Moon", "Neptune", "Venus")  // Pisces
+    )
 
     private val EL = mapOf(
         "Mercury" to doubleArrayOf(48.3313, 3.24587e-5, 7.0047, 5e-8, 29.1241, 1.01444e-5, 0.387098, 0.0, 0.205635, 5.59e-10, 168.6562, 4.0923344368),
@@ -173,50 +212,111 @@ object AstroEngine {
 
     fun sep(a: Double, b: Double): Double = abs(((a - b + 540.0) % 360.0) - 180.0)
 
+    /** Cj value for a planet's class (green / neutral / red column) at a given aspect angle. */
+    fun cjFor(planet: PlanetDef, angle: Int): Double {
+        val table = when (planet.defaultPolarity) {
+            1 -> GREEN_CJ
+            -1 -> RED_CJ
+            else -> NEUTRAL_CJ
+        }
+        return table[angle] ?: 0.0
+    }
+
+    /** Sd: dignity multiplier of a planet at the given ecliptic longitude. */
+    fun signDignity(name: String, lon: Double): Double {
+        val sign = ((floor(lon / 30.0).toInt() % 12) + 12) % 12
+        return when {
+            name in SD_DOM_BY_SIGN[sign] -> SD_DOM
+            name in SD_FALL_BY_SIGN[sign] -> SD_FALL
+            else -> SD_NEUTRAL
+        }
+    }
+
     /**
-     * v2.0 rule: returns the neutral planets (Moon, Mercury, Sun, Mars, Uranus) that are
-     * currently in a hard aspect with a Sp -1 planet (Pluto, Saturn) or with another
-     * neutral planet. Their 72° and 144° aspects to the Ascendant then become Sp -1.
+     * A neutral planet is -1 if it is aspected by a Sp -1 planet (any aspect),
+     * or by a hard aspect from another neutral planet. Otherwise it is +1.
      */
-    fun stressedNeutrals(longs: DoubleArray, orb: Double): Set<String> {
-        val out = mutableSetOf<String>()
-        for (i in PLANETS.indices) {
+    private fun isTainted(i: Int, longs: DoubleArray, orbLimit: Double): Boolean {
+        for (j in PLANETS.indices) {
+            if (j == i) continue
+            val angles: Collection<Int> = when (PLANETS[j].defaultPolarity) {
+                -1 -> ANGLES
+                0 -> HARD_ANGLES
+                else -> emptyList()
+            }
+            val s = sep(longs[i], longs[j])
+            if (angles.any { abs(s - it) <= orbLimit }) return true
+        }
+        return false
+    }
+
+    /** Sp for every planet at this moment: green +1, red -1, neutral +/-1 by the rule above. */
+    fun planetPolarities(longs: DoubleArray, orbLimit: Double): IntArray =
+        IntArray(PLANETS.size) { i ->
             val p = PLANETS[i]
-            if (p.name !in NEUTRAL_PLANETS) continue
+            if (p.defaultPolarity != 0) p.defaultPolarity
+            else if (isTainted(i, longs, orbLimit)) -1 else 1
+        }
+
+    /**
+     * Pm for every planet = Sum(Sp x Wp x Cj) over the planets aspecting it,
+     * divided by Sum(Wp) of those same aspecting planets (scaling).
+     * Sp = polarity of the aspecting planet, Wp = its (base) weight,
+     * Cj = aspect value from the column of the aspecting planet's class.
+     * Result is a weighted average, so it always lies between -0.875 and +0.875.
+     */
+    fun planetModifiers(longs: DoubleArray, pol: IntArray, orbLimit: Double): DoubleArray {
+        val pm = DoubleArray(PLANETS.size)
+        for (i in PLANETS.indices) {
+            var num = 0.0
+            var den = 0.0
             for (j in PLANETS.indices) {
-                if (j == i) continue
-                val q = PLANETS[j]
-                val isSource = q.defaultPolarity == -1 || q.name in NEUTRAL_PLANETS
-                if (!isSource) continue
+                if (i == j) continue
                 val s = sep(longs[i], longs[j])
-                if (HARD_ANGLES.any { abs(s - it) <= orb }) {
-                    out.add(p.name)
-                    break
+                val q = PLANETS[j]
+                for (A in ANGLES) {
+                    if (abs(s - A) <= orbLimit) {
+                        num += pol[j] * q.weight * cjFor(q, A)
+                        den += q.weight
+                    }
                 }
             }
+            pm[i] = if (den > 0.0) num / den else 0.0
         }
-        return out
+        return pm
     }
 
-    fun getPolarity(name: String, aspectAngle: Int, defaultPol: Int, stressed: Boolean = false): Int {
-        if (stressed && (aspectAngle == 72 || aspectAngle == 144)) return -1
-        if (aspectAngle == 0) return if (CONJ_POS.contains(name)) 1 else -1
-        if (aspectAngle == 45 && POS_45.contains(name)) return 1
-        if ((name == "Mars" || name == "Sun") && NEGATIVE_ANGLES.contains(aspectAngle)) return -1
-        return if (defaultPol != 0) defaultPol else if (NEGATIVE_ANGLES.contains(aspectAngle)) -1 else 1
+    /** Dynamic weight = (Wp x Sd) + Pm (scaled), with the Sd and Pm parts switchable. */
+    fun dynamicWeights(
+        longs: DoubleArray,
+        pol: IntArray,
+        orbLimit: Double,
+        useSd: Boolean,
+        usePm: Boolean
+    ): DoubleArray {
+        val pm = if (usePm) planetModifiers(longs, pol, orbLimit) else null
+        return DoubleArray(PLANETS.size) { i ->
+            val p = PLANETS[i]
+            val sd = if (useSd) signDignity(p.name, longs[i]) else 1.0
+            max(MIN_DYNAMIC_WEIGHT, p.weight * sd + (pm?.get(i) ?: 0.0))
+        }
     }
 
-    fun calculateAspects(asDeg: Double, planetLongs: DoubleArray, orbLimit: Double = 3.0): List<AspectInfo> {
+    fun calculateAspects(
+        asDeg: Double,
+        planetLongs: DoubleArray,
+        orbLimit: Double = 3.0,
+        useSd: Boolean = true,
+        usePm: Boolean = true
+    ): List<AspectInfo> {
         val list = mutableListOf<AspectInfo>()
-        val stressed = stressedNeutrals(planetLongs, orbLimit)
+        val pol = planetPolarities(planetLongs, orbLimit)
+        val dw = dynamicWeights(planetLongs, pol, orbLimit, useSd, usePm)
         PLANETS.forEachIndexed { k, planet ->
             val sp = sep(asDeg, planetLongs[k])
             ANGLES.forEach { A ->
                 val d = abs(sp - A)
                 if (d <= orbLimit) {
-                    val s = getPolarity(planet.name, A, planet.defaultPolarity, planet.name in stressed)
-                    var c = (if (s < 0) RED_COEFFS else GREEN_COEFFS)[A] ?: 0.24
-                    if (planet.defaultPolarity == 0 && A == 150) c = 0.38
                     list.add(
                         AspectInfo(
                             planetName = planet.name,
@@ -224,8 +324,9 @@ object AstroEngine {
                             weight = planet.weight,
                             aspectAngle = A,
                             orbDiff = d,
-                            polarity = s,
-                            coeff = c
+                            polarity = pol[k],
+                            coeff = cjFor(planet, A),
+                            dynWeight = dw[k]
                         )
                     )
                 }
@@ -234,15 +335,16 @@ object AstroEngine {
         return list
     }
 
+    /** Smarket = Sum(Sp x Wp x Cj) / Sum(Wp), with Wp the dynamic weight. */
     fun calculateScore(aspects: List<AspectInfo>): Double {
         if (aspects.isEmpty()) return 0.0
         var num = 0.0
         var den = 0.0
         aspects.forEach {
-            num += it.polarity * it.weight * it.coeff
-            den += it.weight
+            num += it.polarity * it.dynWeight * it.coeff
+            den += it.dynWeight
         }
-        return if (den == 0.0) 0.0 else num / den
+        return if (den <= 1e-9) 0.0 else num / den
     }
 
     fun generateSeries(
@@ -250,7 +352,9 @@ object AstroEngine {
         windowHours: Int,
         lat: Double,
         lon: Double,
-        orbLimit: Double = 3.0
+        orbLimit: Double = 3.0,
+        useSd: Boolean = true,
+        usePm: Boolean = true
     ): List<SentimentBar> {
         val st = 300_000L // 5 minutes
         val halfWindow = windowHours * 1_800_000L
@@ -262,7 +366,7 @@ object AstroEngine {
             val t = t0 + i * st
             val longs = calculatePlanetaryPositions(t)
             val asc = calculateAscendant(t, lat, lon)
-            val h = calculateAspects(asc, longs, orbLimit)
+            val h = calculateAspects(asc, longs, orbLimit, useSd, usePm)
             val s = calculateScore(h)
             list.add(SentimentBar(t, asc, longs, h, s))
         }
@@ -274,7 +378,7 @@ object AstroEngine {
         for (i in 0 until series.size - 1) {
             val a = series[i]
             val b = series[i + 1]
-            val stressed = stressedNeutrals(a.planetaryLongitudes, orbLimit)
+            val pol = planetPolarities(a.planetaryLongitudes, orbLimit)
             PLANETS.forEachIndexed { k, planet ->
                 val sa = sep(a.ascDegree, a.planetaryLongitudes[k])
                 val sb = sep(b.ascDegree, b.planetaryLongitudes[k])
@@ -282,11 +386,8 @@ object AstroEngine {
                     val fa = sa - A
                     val fb = sb - A
                     if (fa * fb < 0 && abs(fa) < 8 && abs(fb) < 8) {
-                        val s = getPolarity(planet.name, A, planet.defaultPolarity, planet.name in stressed)
-                        var c = (if (s < 0) RED_COEFFS else GREEN_COEFFS)[A] ?: 0.24
-                        if (planet.defaultPolarity == 0 && A == 150) c = 0.38
                         val exactT = (a.timeMs + (fa / (fa - fb)) * 300_000).toLong()
-                        ev.add(HitEvent(exactT, planet.name, planet.glyph, planet.weight, A, s, c))
+                        ev.add(HitEvent(exactT, planet.name, planet.glyph, planet.weight, A, pol[k], cjFor(planet, A)))
                     }
                 }
             }

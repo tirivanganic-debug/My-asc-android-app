@@ -14,10 +14,11 @@ data class AspectInfo(
     val aspectAngle: Int,
     val orbDiff: Double,
     val polarity: Int,
-    val coeff: Double
+    val coeff: Double,
+    val dynWeight: Double = weight.toDouble() // v3.0: dynamic weight (Wp x Sd + Pm)
 ) {
     val contribution: Double
-        get() = polarity * weight * coeff
+        get() = polarity * dynWeight * coeff
 }
 
 data class SentimentBar(
