@@ -26,7 +26,11 @@ data class SentimentBar(
     val ascDegree: Double,
     val planetaryLongitudes: DoubleArray,
     val aspects: List<AspectInfo>,
-    val sentimentScore: Double
+    val sentimentScore: Double,
+    // v3.2: Midheaven vs the fixed birth chart points
+    val mcDegree: Double = 0.0,
+    val mcAspects: List<AspectInfo> = emptyList(),
+    val mcScore: Double = 0.0
 )
 
 data class HitEvent(

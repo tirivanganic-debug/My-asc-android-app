@@ -29,6 +29,28 @@ object AstroEngine {
     // Hard aspects (neutral-planet taint rule and original per-angle polarity)
     val HARD_ANGLES = setOf(45, 90, 135, 150, 180)
 
+    // v3.1: neutral planets whose taint flips ALL their Ascendant aspects (when the switch is on)
+    private val TAINT_ALL_PLANETS = setOf("Mercury", "Mars")
+
+    // v3.2: birth chart fixed points (tropical longitude = sign*30 + degrees + minutes/60; Aries = 0 ... Pisces = 11)
+    private fun natalLon(sign: Int, deg: Int, min: Int): Double = sign * 30.0 + deg + min / 60.0
+
+    val NATAL_LONGS: DoubleArray = DoubleArray(PLANETS.size) { i ->
+        when (PLANETS[i].name) {
+            "Mercury" -> natalLon(0, 2, 37)     // 2 Aries 37
+            "Moon" -> natalLon(0, 5, 48)        // 5 Aries 48
+            "Sun" -> natalLon(0, 18, 9)         // 18 Aries 09
+            "Venus" -> natalLon(0, 20, 7)       // 20 Aries 07
+            "Saturn" -> natalLon(3, 20, 39)     // 20 Cancer 39
+            "Jupiter" -> natalLon(6, 13, 25)    // 13 Libra 25
+            "Pluto" -> natalLon(8, 24, 26)      // 24 Sagittarius 26
+            "Mars" -> natalLon(10, 13, 8)       // 13 Aquarius 08
+            "Neptune" -> natalLon(10, 17, 7)    // 17 Aquarius 07
+            "Uranus" -> natalLon(11, 9, 0)      // 9 Pisces 00
+            else -> 0.0
+        }
+    }
+
     // Pm divisor in the dynamic weight, and the floor for the dynamic weight
     private const val PM_DIVISOR = 10.0
     private const val MIN_DYNAMIC_WEIGHT = 0.0
@@ -214,6 +236,16 @@ object AstroEngine {
         return rev(atan2(cs(th), -(sn(th) * cs(eps) + tan(lat * R) * sn(eps))) / R)
     }
 
+    /** v3.2: Midheaven (MC) ecliptic longitude, from the same sidereal time and obliquity as the Ascendant. */
+    fun calculateMidheaven(ms: Long, lon: Double): Double {
+        val jd = ms / 864e5 + 2440587.5
+        val dd = jd - 2451545.0
+        val T = dd / 36525.0
+        val th = rev(280.46061837 + 360.98564736629 * dd + 3.87933e-4 * T * T + lon)
+        val eps = 23.4393 - 3.563e-7 * (jd - 2451543.5)
+        return rev(atan2(sn(th), cs(th) * cs(eps)) / R)
+    }
+
     fun sep(a: Double, b: Double): Double = abs(((a - b + 540.0) % 360.0) - 180.0)
 
     /** Cj value for a planet's class (green / neutral / red column) at a given aspect angle. */
@@ -264,10 +296,12 @@ object AstroEngine {
      * Green and red planets keep their class polarity. Neutral planets: soft +1, hard -1,
      * 45° stays +1, conjunction by the original rule (+1 Moon, Mercury, Uranus; -1 Mars, Sun).
      * A tainted neutral planet is -1 on 72° and 144° (only passed as tainted for Ascendant aspects).
+     * With taintAllMm on, a tainted Mercury or Mars is -1 on EVERY aspect to the Ascendant.
      */
-    fun aspectPolarity(planet: PlanetDef, angle: Int, tainted: Boolean): Int {
+    fun aspectPolarity(planet: PlanetDef, angle: Int, tainted: Boolean, taintAllMm: Boolean = false): Int {
         if (planet.defaultPolarity != 0) return planet.defaultPolarity
         if (tainted && (angle == 72 || angle == 144)) return -1
+        if (tainted && taintAllMm && planet.name in TAINT_ALL_PLANETS) return -1
         if (angle == 0) return if (planet.name in CONJ_POS) 1 else -1
         if (angle == 45 && planet.name in POS_45) return 1
         return if (angle in HARD_ANGLES) -1 else 1
@@ -317,7 +351,8 @@ object AstroEngine {
         planetLongs: DoubleArray,
         orbLimit: Double = 3.0,
         useSd: Boolean = true,
-        usePm: Boolean = true
+        usePm: Boolean = true,
+        taintAllMm: Boolean = true
     ): List<AspectInfo> {
         val list = mutableListOf<AspectInfo>()
         val tainted = taintedFlags(planetLongs, orbLimit)
@@ -334,7 +369,88 @@ object AstroEngine {
                             weight = planet.weight,
                             aspectAngle = A,
                             orbDiff = d,
-                            polarity = aspectPolarity(planet, A, tainted[k]),
+                            polarity = aspectPolarity(planet, A, tainted[k], taintAllMm),
+                            coeff = cjFor(planet, A),
+                            dynWeight = dw[k]
+                        )
+                    )
+                }
+            }
+        }
+        return list
+    }
+
+    /** v3.2: a neutral natal point is tainted by the TRANSITING planets (same rule as before). */
+    fun natalTaintedFlags(transitLongs: DoubleArray, orbLimit: Double): BooleanArray =
+        BooleanArray(PLANETS.size) { i ->
+            PLANETS[i].defaultPolarity == 0 && PLANETS.indices.any { j ->
+                val angles: Collection<Int> = when (PLANETS[j].defaultPolarity) {
+                    -1 -> ANGLES
+                    0 -> HARD_ANGLES
+                    else -> emptyList()
+                }
+                val s = sep(NATAL_LONGS[i], transitLongs[j])
+                angles.any { abs(s - it) <= orbLimit }
+            }
+        }
+
+    /** v3.2: sum of Pm for each natal point, from the transiting planets aspecting it. */
+    fun natalModifiers(transitLongs: DoubleArray, orbLimit: Double): DoubleArray {
+        val pm = DoubleArray(PLANETS.size)
+        for (i in PLANETS.indices) {
+            for (j in PLANETS.indices) {
+                val s = sep(NATAL_LONGS[i], transitLongs[j])
+                val q = PLANETS[j]
+                for (A in ANGLES) {
+                    if (abs(s - A) <= orbLimit) {
+                        pm[i] += q.weight * cjFor(q, A) * aspectPolarity(q, A, false)
+                    }
+                }
+            }
+        }
+        return pm
+    }
+
+    /** v3.2: dynamic weight of each natal point = Wp x Sd(natal sign) + (sum of Pm / 10). */
+    fun natalDynamicWeights(
+        transitLongs: DoubleArray,
+        orbLimit: Double,
+        useSd: Boolean,
+        usePm: Boolean
+    ): DoubleArray {
+        val pm = if (usePm) natalModifiers(transitLongs, orbLimit) else null
+        return DoubleArray(PLANETS.size) { i ->
+            val p = PLANETS[i]
+            val sd = if (useSd) signDignity(p.name, NATAL_LONGS[i]) else 1.0
+            max(MIN_DYNAMIC_WEIGHT, p.weight * sd + (pm?.get(i) ?: 0.0) / PM_DIVISOR)
+        }
+    }
+
+    /** v3.2: aspects from the Midheaven to the fixed birth chart points, same formulas as the Ascendant. */
+    fun calculateMidheavenAspects(
+        mcDeg: Double,
+        transitLongs: DoubleArray,
+        orbLimit: Double = 3.0,
+        useSd: Boolean = true,
+        usePm: Boolean = true,
+        taintAllMm: Boolean = true
+    ): List<AspectInfo> {
+        val list = mutableListOf<AspectInfo>()
+        val tainted = natalTaintedFlags(transitLongs, orbLimit)
+        val dw = natalDynamicWeights(transitLongs, orbLimit, useSd, usePm)
+        PLANETS.forEachIndexed { k, planet ->
+            val sp = sep(mcDeg, NATAL_LONGS[k])
+            ANGLES.forEach { A ->
+                val d = abs(sp - A)
+                if (d <= orbLimit) {
+                    list.add(
+                        AspectInfo(
+                            planetName = planet.name,
+                            glyph = planet.glyph,
+                            weight = planet.weight,
+                            aspectAngle = A,
+                            orbDiff = d,
+                            polarity = aspectPolarity(planet, A, tainted[k], taintAllMm),
                             coeff = cjFor(planet, A),
                             dynWeight = dw[k]
                         )
@@ -364,7 +480,8 @@ object AstroEngine {
         lon: Double,
         orbLimit: Double = 3.0,
         useSd: Boolean = true,
-        usePm: Boolean = true
+        usePm: Boolean = true,
+        taintAllMm: Boolean = true
     ): List<SentimentBar> {
         val st = 300_000L // 5 minutes
         val halfWindow = windowHours * 1_800_000L
@@ -376,14 +493,16 @@ object AstroEngine {
             val t = t0 + i * st
             val longs = calculatePlanetaryPositions(t)
             val asc = calculateAscendant(t, lat, lon)
-            val h = calculateAspects(asc, longs, orbLimit, useSd, usePm)
+            val h = calculateAspects(asc, longs, orbLimit, useSd, usePm, taintAllMm)
             val s = calculateScore(h)
-            list.add(SentimentBar(t, asc, longs, h, s))
+            val mc = calculateMidheaven(t, lon)
+            val mcAsp = calculateMidheavenAspects(mc, longs, orbLimit, useSd, usePm, taintAllMm)
+            list.add(SentimentBar(t, asc, longs, h, s, mc, mcAsp, calculateScore(mcAsp)))
         }
         return list
     }
 
-    fun calculateExactHits(series: List<SentimentBar>, orbLimit: Double = 3.0): List<HitEvent> {
+    fun calculateExactHits(series: List<SentimentBar>, orbLimit: Double = 3.0, taintAllMm: Boolean = true): List<HitEvent> {
         val ev = mutableListOf<HitEvent>()
         for (i in 0 until series.size - 1) {
             val a = series[i]
@@ -397,7 +516,7 @@ object AstroEngine {
                     val fb = sb - A
                     if (fa * fb < 0 && abs(fa) < 8 && abs(fb) < 8) {
                         val exactT = (a.timeMs + (fa / (fa - fb)) * 300_000).toLong()
-                        ev.add(HitEvent(exactT, planet.name, planet.glyph, planet.weight, A, aspectPolarity(planet, A, tainted[k]), cjFor(planet, A)))
+                        ev.add(HitEvent(exactT, planet.name, planet.glyph, planet.weight, A, aspectPolarity(planet, A, tainted[k], taintAllMm), cjFor(planet, A)))
                     }
                 }
             }

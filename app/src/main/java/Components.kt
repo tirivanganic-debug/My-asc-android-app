@@ -231,6 +231,112 @@ fun ActiveAspectsLayer(aspects: List<AspectInfo>, modifier: Modifier = Modifier)
     }
 }
 
+/**
+ * v3.2: Active Midheaven Aspects, the Midheaven against the fixed birth chart points.
+ */
+@Composable
+fun ActiveMidheavenCard(currentBar: SentimentBar?) {
+    if (currentBar == null) return
+
+    val aspects = currentBar.mcAspects
+    val sorted = aspects.sortedByDescending { abs(it.contribution) }
+    val mcScore = currentBar.mcScore
+    val scoreColor = if (mcScore > 0.15) Emerald400 else if (mcScore < -0.15) Rose400 else Slate400
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = CardDark),
+        shape = RoundedCornerShape(16.dp),
+        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(BorderDark))
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "ACTIVE MIDHEAVEN ASPECTS (${aspects.size})",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Slate100
+                )
+                Text(
+                    text = "MC index " + (if (mcScore > 0) "+%.2f".format(mcScore) else "%.2f".format(mcScore)),
+                    fontFamily = FontFamily.Monospace,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 12.sp,
+                    color = scoreColor
+                )
+            }
+            Text(
+                text = "Midheaven " + AstroEngine.formatDMS(currentBar.mcDegree) + "  vs birth chart",
+                fontSize = 10.sp,
+                color = Slate400,
+                modifier = Modifier.padding(top = 2.dp)
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            if (sorted.isEmpty()) {
+                Text(
+                    text = "No birth chart point within orb of the Midheaven at this moment",
+                    fontSize = 11.sp,
+                    color = Slate400,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            } else {
+                sorted.forEach { aspect ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 3.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = aspect.glyph,
+                                fontSize = 15.sp,
+                                color = Amber500,
+                                modifier = Modifier.width(22.dp)
+                            )
+                            Text(
+                                text = "Natal ${aspect.planetName} ${aspect.aspectAngle}°",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Slate100
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "(orb %.2f°)".format(aspect.orbDiff),
+                                fontSize = 10.sp,
+                                color = Slate400
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "W %.1f".format(aspect.dynWeight),
+                                fontSize = 10.sp,
+                                fontFamily = FontFamily.Monospace,
+                                color = Slate400
+                            )
+                        }
+
+                        val contrib = aspect.contribution
+                        Text(
+                            text = if (contrib > 0) "+%.2f".format(contrib) else "%.2f".format(contrib),
+                            fontFamily = FontFamily.Monospace,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp,
+                            color = if (contrib > 0) Emerald400 else Rose400
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Composable
 fun ExactHitsCard(
     hits: List<HitEvent>,

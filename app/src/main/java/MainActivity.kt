@@ -90,6 +90,9 @@ fun MainScreen(
     var selectedTimezone by remember { mutableStateOf("Europe/London") }
     var useSd by remember { mutableStateOf(true) }   // v3.0: sign dignity switch
     var usePm by remember { mutableStateOf(true) }   // v3.0: planet-to-planet modifier switch
+    var showMc by remember { mutableStateOf(true) }          // v3.2: Midheaven birth chart overlay
+    var magentaOn by remember { mutableStateOf(true) }       // v3.2: magenta for Pluto / Mercury / Saturn aspects
+    var taintAllMm by remember { mutableStateOf(true) } // v3.1: Mercury/Mars taint flips ALL Ascendant aspects
 
     val locations = AstroEngine.PRESET_LOCATIONS
     val activeLocation = locations[selectedLocationIdx]
@@ -109,7 +112,7 @@ fun MainScreen(
     }
 
     // Planetary series calculation (100% offline pure Kotlin)
-    val series = remember(centerTimeMs, windowHours, activeLocation, useSd, usePm) {
+    val series = remember(centerTimeMs, windowHours, activeLocation, useSd, usePm, taintAllMm) {
         AstroEngine.generateSeries(
             centerMs = centerTimeMs,
             windowHours = windowHours,
@@ -117,13 +120,14 @@ fun MainScreen(
             lon = activeLocation.lon,
             orbLimit = 3.0,
             useSd = useSd,
-            usePm = usePm
+            usePm = usePm,
+            taintAllMm = taintAllMm
         )
     }
 
     // Exact hits in window
-    val exactHits = remember(series) {
-        AstroEngine.calculateExactHits(series, 3.0)
+    val exactHits = remember(series, taintAllMm) {
+        AstroEngine.calculateExactHits(series, 3.0, taintAllMm)
     }
 
     // Inspected Bar
@@ -312,6 +316,61 @@ fun MainScreen(
                         Text("Pm  planet aspects", fontSize = 11.sp, color = Slate100)
                     }
                 }
+
+                // v3.1: Mercury & Mars taint switch (on = tainted flips all their Ascendant aspects)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Switch(
+                        checked = taintAllMm,
+                        onCheckedChange = {
+                            onHaptic()
+                            taintAllMm = it
+                        },
+                        colors = SwitchDefaults.colors(checkedTrackColor = Emerald500)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Mercury & Mars taint: all aspects (off = 72° / 144° only)", fontSize = 11.sp, color = Slate100)
+                }
+
+                // v3.2: Midheaven overlay and magenta highlight switches
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Switch(
+                            checked = showMc,
+                            onCheckedChange = {
+                                onHaptic()
+                                showMc = it
+                            },
+                            colors = SwitchDefaults.colors(checkedTrackColor = Emerald500)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("MC  birth chart overlay", fontSize = 11.sp, color = Slate100)
+                    }
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Switch(
+                            checked = magentaOn,
+                            onCheckedChange = {
+                                onHaptic()
+                                magentaOn = it
+                            },
+                            colors = SwitchDefaults.colors(checkedTrackColor = Emerald500)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("Magenta  Pluto / Mercury / Saturn", fontSize = 11.sp, color = Slate100)
+                    }
+                }
             }
         }
 
@@ -337,6 +396,12 @@ fun MainScreen(
                     fontWeight = FontWeight.Bold,
                     color = Slate100
                 )
+                Text(
+                    text = "Wide bars: Ascendant  |  thin lines: Midheaven vs birth chart  |  magenta: Pluto / Mercury / Saturn aspect",
+                    fontSize = 10.sp,
+                    color = Slate400,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Box(
@@ -355,6 +420,8 @@ fun MainScreen(
                     SentimentChart(
                         series = series,
                         inspectedTimeMs = currentBar?.timeMs ?: inspectedTimeMs,
+                        showMidheaven = showMc,
+                        highlightMagenta = magentaOn,
                         onInspectTime = { t ->
                             onHaptic()
                             isLive = false
@@ -391,6 +458,11 @@ fun MainScreen(
                     }
                 }
             }
+        }
+
+        // v3.2: Active Midheaven Aspects (below the chart)
+        if (showMc) {
+            ActiveMidheavenCard(currentBar = currentBar)
         }
 
         // Exact Hits Card

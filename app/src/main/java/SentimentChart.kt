@@ -19,11 +19,25 @@ import com.ascendant.sentiment.ui.theme.*
 import kotlin.math.abs
 import kotlin.math.max
 
+// v3.2: bright magenta highlight for aspects involving these planets
+private val MagentaBright = Color(0xFFFF00FF)
+private val MAGENTA_PLANETS = setOf("Pluto", "Mercury", "Saturn")
+
+private fun mcLineColor(bar: SentimentBar, highlightMagenta: Boolean): Color {
+    val m = bar.mcScore
+    return if (highlightMagenta && bar.mcAspects.any { it.planetName in MAGENTA_PLANETS }) MagentaBright
+    else if (m > 0.15) Emerald400
+    else if (m < -0.15) Rose400
+    else Slate400
+}
+
 @Composable
 fun SentimentChart(
     series: List<SentimentBar>,
     inspectedTimeMs: Long,
     onInspectTime: (Long) -> Unit,
+    showMidheaven: Boolean = true,
+    highlightMagenta: Boolean = true,
     modifier: Modifier = Modifier.fillMaxWidth().height(260.dp)
 ) {
     if (series.isEmpty()) return
@@ -66,6 +80,10 @@ fun SentimentChart(
         series.forEach {
             val a = abs(it.sentimentScore)
             if (a > maxScore) maxScore = a
+            if (showMidheaven) {
+                val m = abs(it.mcScore)
+                if (m > maxScore) maxScore = m
+            }
         }
         val maxVal = max(0.5, (maxScore * 10).toInt() / 10.0 + 0.15)
         fun getY(v: Double): Float = (topMargin + (plotHeight / 2.0) * (1.0 - v / maxVal)).toFloat()
@@ -126,7 +144,8 @@ fun SentimentChart(
         series.forEachIndexed { i, bar ->
             val isBull = bar.sentimentScore > 0.15
             val isBear = bar.sentimentScore < -0.15
-            val barColor = if (isBull) Emerald500 else if (isBear) Rose500 else Color(0xFF64748B)
+            val magentaBar = highlightMagenta && bar.aspects.any { it.planetName in MAGENTA_PLANETS }
+            val barColor = if (magentaBar) MagentaBright else if (isBull) Emerald500 else if (isBear) Rose500 else Color(0xFF64748B)
 
             val yVal = getY(bar.sentimentScore)
             val bx = leftMargin + i * barWidth
@@ -134,10 +153,34 @@ fun SentimentChart(
             val bHeight = maxOf(abs(yVal - yZero), if (bar.sentimentScore != 0.0) 1f else 0f)
 
             drawRect(
-                color = barColor.copy(alpha = 0.8f),
+                color = barColor.copy(alpha = if (magentaBar) 0.9f else 0.8f),
                 topLeft = Offset(bx, bTop),
                 size = Size(maxOf(barWidth - 1f, 1.5f), bHeight)
             )
+        }
+
+        // v3.2: Midheaven vs birth chart, thin fully opaque lines over the bars (dark halo keeps them visible)
+        if (showMidheaven) {
+            val lineW = max(1.5f, minOf(barWidth * 0.5f, 3.dp.toPx()))
+            series.forEachIndexed { i, bar ->
+                val m = bar.mcScore
+                if (m != 0.0) {
+                    val x = leftMargin + (i + 0.5f) * barWidth
+                    val y = getY(m)
+                    drawLine(
+                        color = Color.Black.copy(alpha = 0.85f),
+                        start = Offset(x, yZero),
+                        end = Offset(x, y),
+                        strokeWidth = lineW + 2f
+                    )
+                    drawLine(
+                        color = mcLineColor(bar, highlightMagenta),
+                        start = Offset(x, yZero),
+                        end = Offset(x, y),
+                        strokeWidth = lineW
+                    )
+                }
+            }
         }
 
         // Current real-time "Now" vertical dashed line
@@ -180,5 +223,12 @@ fun SentimentChart(
             radius = 2.5.dp.toPx(),
             center = Offset(selX, selY)
         )
+
+        // Midheaven node on the selected bar
+        if (showMidheaven && selBar.mcScore != 0.0) {
+            val mcY = getY(selBar.mcScore)
+            drawCircle(color = Color.White, radius = 3.dp.toPx(), center = Offset(selX, mcY))
+            drawCircle(color = mcLineColor(selBar, highlightMagenta), radius = 1.8.dp.toPx(), center = Offset(selX, mcY))
+        }
     }
 }
