@@ -28,6 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ascendant.sentiment.engine.AstroEngine
@@ -91,7 +92,7 @@ fun MainScreen(
     var useSd by remember { mutableStateOf(true) }   // v3.0: sign dignity switch
     var usePm by remember { mutableStateOf(true) }   // v3.0: planet-to-planet modifier switch
     var showMc by remember { mutableStateOf(true) }          // v3.2: Midheaven birth chart overlay
-    var magentaOn by remember { mutableStateOf(true) }       // v3.2: magenta for Pluto / Mercury / Saturn aspects
+    var zoom by remember { mutableStateOf(1f) }              // v3.3: chart zoom (1 = all bars)
     var taintAllMm by remember { mutableStateOf(true) } // v3.1: Mercury/Mars taint flips ALL Ascendant aspects
 
     val locations = AstroEngine.PRESET_LOCATIONS
@@ -331,10 +332,10 @@ fun MainScreen(
                         colors = SwitchDefaults.colors(checkedTrackColor = Emerald500)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("Mercury & Mars taint: all aspects (off = 72° / 144° only)", fontSize = 11.sp, color = Slate100)
+                    Text("Mercury & Mars taint: all aspects (off = no taint effect)", fontSize = 11.sp, color = Slate100)
                 }
 
-                // v3.2: Midheaven overlay and magenta highlight switches
+                // v3.2: Midheaven overlay switch
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -354,21 +355,6 @@ fun MainScreen(
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text("MC  birth chart overlay", fontSize = 11.sp, color = Slate100)
-                    }
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Switch(
-                            checked = magentaOn,
-                            onCheckedChange = {
-                                onHaptic()
-                                magentaOn = it
-                            },
-                            colors = SwitchDefaults.colors(checkedTrackColor = Emerald500)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Magenta  Pluto / Mercury / Saturn", fontSize = 11.sp, color = Slate100)
                     }
                 }
             }
@@ -390,14 +376,52 @@ fun MainScreen(
             border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(BorderDark))
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "SENTIMENT INDEX PER 5-MIN BAR",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Slate100,
+                        modifier = Modifier.weight(1f)
+                    )
+                    // v3.3: zoom out / in
+                    OutlinedButton(
+                        onClick = {
+                            onHaptic()
+                            zoom = (zoom / 2f).coerceIn(1f, 12f)
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.size(width = 34.dp, height = 30.dp)
+                    ) {
+                        Text("−", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Slate100)
+                    }
+                    Text(
+                        text = if (zoom < 10f) "%.1f×".format(zoom) else "%.0f×".format(zoom),
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily.Monospace,
+                        color = Slate400,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(38.dp)
+                    )
+                    OutlinedButton(
+                        onClick = {
+                            onHaptic()
+                            zoom = (zoom * 2f).coerceIn(1f, 12f)
+                        },
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(0.dp),
+                        modifier = Modifier.size(width = 34.dp, height = 30.dp)
+                    ) {
+                        Text("+", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Slate100)
+                    }
+                }
                 Text(
-                    text = "SENTIMENT INDEX PER 5-MIN BAR",
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Slate100
-                )
-                Text(
-                    text = "Wide bars: Ascendant  |  thin lines: Midheaven vs birth chart  |  magenta: Pluto / Mercury / Saturn aspect",
+                    text = "Wide bars: Ascendant  |  thin lines: Midheaven vs birth chart  |  pinch or use +/- to zoom",
                     fontSize = 10.sp,
                     color = Slate400,
                     modifier = Modifier.padding(top = 2.dp)
@@ -420,8 +444,9 @@ fun MainScreen(
                     SentimentChart(
                         series = series,
                         inspectedTimeMs = currentBar?.timeMs ?: inspectedTimeMs,
+                        zoom = zoom,
+                        onZoomBy = { f -> zoom = (zoom * f).coerceIn(1f, 12f) },
                         showMidheaven = showMc,
-                        highlightMagenta = magentaOn,
                         onInspectTime = { t ->
                             onHaptic()
                             isLive = false
@@ -478,5 +503,15 @@ fun MainScreen(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "by A'RA",
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Slate400
+        )
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }

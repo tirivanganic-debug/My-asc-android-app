@@ -270,8 +270,8 @@ object AstroEngine {
 
     /**
      * A neutral planet is tainted if it is aspected by a Sp -1 planet (any aspect),
-     * or by a hard aspect from another neutral planet. The taint only matters for the
-     * 72° and 144° aspects a neutral planet makes to the Ascendant (they become -1).
+     * or by a hard aspect from another neutral planet. The taint only has an effect for
+     * Mercury and Mars, and only while the Mercury & Mars taint switch is on.
      */
     private fun isTainted(i: Int, longs: DoubleArray, orbLimit: Double): Boolean {
         for (j in PLANETS.indices) {
@@ -292,19 +292,23 @@ object AstroEngine {
         BooleanArray(PLANETS.size) { i -> PLANETS[i].defaultPolarity == 0 && isTainted(i, longs, orbLimit) }
 
     /**
-     * Sp of a planet's aspect (to the Ascendant or to another planet).
-     * Green and red planets keep their class polarity. Neutral planets: soft +1, hard -1,
-     * 45° stays +1, conjunction by the original rule (+1 Moon, Mercury, Uranus; -1 Mars, Sun).
-     * A tainted neutral planet is -1 on 72° and 144° (only passed as tainted for Ascendant aspects).
-     * With taintAllMm on, a tainted Mercury or Mars is -1 on EVERY aspect to the Ascendant.
+     * Sp of a planet's aspect (to the Ascendant, the Midheaven or another planet).
+     * Base polarity: green and red planets keep their class polarity. Neutral planets: soft +1,
+     * hard -1, 45° stays +1, conjunction by the original rule (+1 Moon, Mercury, Uranus; -1 Mars, Sun).
+     * With taintAllMm on, a tainted Mercury or Mars has base -1 on EVERY aspect.
+     * Then the 72° and 144° aspects flip the base polarity, for every planet
+     * (so a tainted Mercury or Mars flips back to +1 on 72° and 144°).
      */
     fun aspectPolarity(planet: PlanetDef, angle: Int, tainted: Boolean, taintAllMm: Boolean = false): Int {
-        if (planet.defaultPolarity != 0) return planet.defaultPolarity
-        if (tainted && (angle == 72 || angle == 144)) return -1
-        if (tainted && taintAllMm && planet.name in TAINT_ALL_PLANETS) return -1
-        if (angle == 0) return if (planet.name in CONJ_POS) 1 else -1
-        if (angle == 45 && planet.name in POS_45) return 1
-        return if (angle in HARD_ANGLES) -1 else 1
+        val base = when {
+            planet.defaultPolarity != 0 -> planet.defaultPolarity
+            tainted && taintAllMm && planet.name in TAINT_ALL_PLANETS -> -1
+            angle == 0 -> if (planet.name in CONJ_POS) 1 else -1
+            angle == 45 && planet.name in POS_45 -> 1
+            angle in HARD_ANGLES -> -1
+            else -> 1
+        }
+        return if (angle == 72 || angle == 144) -base else base
     }
 
     /**
