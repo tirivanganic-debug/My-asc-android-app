@@ -421,7 +421,7 @@ fun MainScreen(
                     }
                 }
                 Text(
-                    text = "Wide bars: Ascendant  |  thin lines: Midheaven vs birth chart  |  pinch or use +/- to zoom",
+                    text = "Wide bars: Ascendant  |  thin lines: Midheaven vs birth chart  |  magenta: hard Pluto aspect  |  pinch or +/- to zoom",
                     fontSize = 10.sp,
                     color = Slate400,
                     modifier = Modifier.padding(top = 2.dp)
@@ -433,14 +433,7 @@ fun MainScreen(
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(8.dp))
                 ) {
-                    // Back layer: active aspects
-                    ActiveAspectsLayer(
-                        aspects = currentBar?.aspects ?: emptyList(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 260.dp)
-                    )
-                    // Front layer: semi-transparent bar chart
+                    // Back layer: faded bar chart
                     SentimentChart(
                         series = series,
                         inspectedTimeMs = currentBar?.timeMs ?: inspectedTimeMs,
@@ -453,6 +446,13 @@ fun MainScreen(
                             inspectedTimeMs = t
                         },
                         modifier = Modifier.matchParentSize()
+                    )
+                    // Front layer: opaque active aspects
+                    ActiveAspectsLayer(
+                        aspects = currentBar?.aspects ?: emptyList(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = 260.dp)
                     )
                 }
 

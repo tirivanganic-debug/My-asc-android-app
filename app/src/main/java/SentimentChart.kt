@@ -26,7 +26,13 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 /** Colour of the thin Midheaven line for one bar. */
+private val MagentaBright = Color(0xFFFF00FF)
+private const val BAR_ALPHA = 0.40f
+private const val BAR_ALPHA_MAGENTA = 0.75f
+private const val MC_ALPHA = 0.60f
+
 private fun mcLineColor(bar: SentimentBar): Color {
+    if (bar.mcHasHardPluto) return MagentaBright
     val m = bar.mcScore
     return if (m > 0.15) Emerald400 else if (m < -0.15) Rose400 else Slate400
 }
@@ -136,7 +142,7 @@ fun SentimentChart(
         val firstVisible = view[0]
 
         // Background (semi-transparent so the Active Aspects behind it show through)
-        drawRect(color = BgDark.copy(alpha = 0.55f), size = size)
+        drawRect(color = BgDark, size = size)
 
         // Bullish Band
         val yBull = getY(0.15)
@@ -199,7 +205,8 @@ fun SentimentChart(
             val bar = series[i]
             val isBull = bar.sentimentScore > 0.15
             val isBear = bar.sentimentScore < -0.15
-            val barColor = if (isBull) Emerald500 else if (isBear) Rose500 else Color(0xFF64748B)
+            val plutoHard = bar.hasHardPluto
+            val barColor = if (plutoHard) MagentaBright else if (isBull) Emerald500 else if (isBear) Rose500 else Color(0xFF64748B)
 
             val yVal = getY(bar.sentimentScore)
             val bx = leftMargin + (i - firstVisible) * barWidth
@@ -207,7 +214,7 @@ fun SentimentChart(
             val bHeight = maxOf(abs(yVal - yZero), if (bar.sentimentScore != 0.0) 1f else 0f)
 
             drawRect(
-                color = barColor.copy(alpha = 0.8f),
+                color = barColor.copy(alpha = if (plutoHard) BAR_ALPHA_MAGENTA else BAR_ALPHA),
                 topLeft = Offset(bx, bTop),
                 size = Size(maxOf(barWidth - 1f, 1.5f), bHeight)
             )
@@ -222,14 +229,16 @@ fun SentimentChart(
                 if (m != 0.0) {
                     val x = leftMargin + (i - firstVisible + 0.5f) * barWidth
                     val y = getY(m)
+                    val mag = bar.mcHasHardPluto
+                    val la = if (mag) 1f else MC_ALPHA
                     drawLine(
-                        color = Color.Black.copy(alpha = 0.85f),
+                        color = Color.Black.copy(alpha = 0.85f * la),
                         start = Offset(x, yZero),
                         end = Offset(x, y),
                         strokeWidth = lineW + 2f
                     )
                     drawLine(
-                        color = mcLineColor(bar),
+                        color = mcLineColor(bar).copy(alpha = la),
                         start = Offset(x, yZero),
                         end = Offset(x, y),
                         strokeWidth = lineW

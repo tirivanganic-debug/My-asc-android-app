@@ -151,9 +151,10 @@ fun SentimentGaugeCard(
     }
 }
 
+private val HardPlutoMagenta = Color(0xFFFF00FF)
+
 /**
- * v2.0: Active Ascendant Aspects, drawn as the BACK layer of the sentiment chart.
- * The chart sits on top of this with a semi-transparent background.
+ * v3.4: Active Ascendant Aspects, drawn as the opaque FRONT layer over the faded bar chart.
  */
 @Composable
 fun ActiveAspectsLayer(aspects: List<AspectInfo>, modifier: Modifier = Modifier) {
@@ -161,7 +162,6 @@ fun ActiveAspectsLayer(aspects: List<AspectInfo>, modifier: Modifier = Modifier)
 
     Column(
         modifier = modifier
-            .background(BgDark)
             .padding(start = 46.dp, end = 16.dp, top = 14.dp, bottom = 28.dp)
     ) {
         Text(
@@ -185,7 +185,9 @@ fun ActiveAspectsLayer(aspects: List<AspectInfo>, modifier: Modifier = Modifier)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 3.dp),
+                        .padding(vertical = 2.dp)
+                        .background(BgDark.copy(alpha = 0.72f), RoundedCornerShape(4.dp))
+                        .padding(horizontal = 4.dp, vertical = 1.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -193,14 +195,14 @@ fun ActiveAspectsLayer(aspects: List<AspectInfo>, modifier: Modifier = Modifier)
                         Text(
                             text = aspect.glyph,
                             fontSize = 15.sp,
-                            color = Amber500,
+                            color = if (aspect.isHardPluto) HardPlutoMagenta else Amber500,
                             modifier = Modifier.width(22.dp)
                         )
                         Text(
                             text = "${aspect.planetName} ${aspect.aspectAngle}°",
                             fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Slate100
+                            fontWeight = if (aspect.isHardPluto) FontWeight.Bold else FontWeight.SemiBold,
+                            color = if (aspect.isHardPluto) HardPlutoMagenta else Slate100
                         )
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
@@ -298,14 +300,14 @@ fun ActiveMidheavenCard(currentBar: SentimentBar?) {
                             Text(
                                 text = aspect.glyph,
                                 fontSize = 15.sp,
-                                color = Amber500,
+                                color = if (aspect.isHardPluto) HardPlutoMagenta else Amber500,
                                 modifier = Modifier.width(22.dp)
                             )
                             Text(
                                 text = "Natal ${aspect.planetName} ${aspect.aspectAngle}°",
                                 fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = Slate100
+                                fontWeight = if (aspect.isHardPluto) FontWeight.Bold else FontWeight.SemiBold,
+                                color = if (aspect.isHardPluto) HardPlutoMagenta else Slate100
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
