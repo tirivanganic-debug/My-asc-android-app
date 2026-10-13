@@ -488,6 +488,7 @@ fun MainScreen(
         // v3.2: Active Midheaven Aspects (below the chart)
         if (showMc) {
             ActiveMidheavenCard(currentBar = currentBar)
+            ResonanceCard(currentBar = currentBar)
         }
 
         // Exact Hits Card

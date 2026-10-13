@@ -339,6 +339,85 @@ fun ActiveMidheavenCard(currentBar: SentimentBar?) {
     }
 }
 
+/** v3.5: planets that appear in both the Active Ascendant and Active Midheaven aspect lists. */
+@Composable
+fun ResonanceCard(currentBar: SentimentBar?) {
+    if (currentBar == null) return
+
+    val ascByPlanet = currentBar.aspects.groupBy { it.planetName }
+    val mcByPlanet = currentBar.mcAspects.groupBy { it.planetName }
+    val resonant = ascByPlanet.keys.filter { it in mcByPlanet }
+        .sortedByDescending { p ->
+            (ascByPlanet[p].orEmpty() + mcByPlanet[p].orEmpty()).sumOf { abs(it.contribution) }
+        }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = CardDark),
+        shape = RoundedCornerShape(16.dp),
+        border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(BorderDark))
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = "RESONANCE (${resonant.size})",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Slate100
+            )
+            Text(
+                text = "Planets active on both the Ascendant and the Midheaven",
+                fontSize = 10.sp,
+                color = Slate400,
+                modifier = Modifier.padding(top = 2.dp)
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+
+            if (resonant.isEmpty()) {
+                Text(
+                    text = "No resonant planets at this moment",
+                    fontSize = 11.sp,
+                    color = Slate400,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
+            } else {
+                resonant.forEach { planet ->
+                    val asc = ascByPlanet[planet].orEmpty()
+                    val mc = mcByPlanet[planet].orEmpty()
+                    val glyph = asc.firstOrNull()?.glyph ?: ""
+                    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = glyph,
+                                fontSize = 15.sp,
+                                color = Amber500,
+                                modifier = Modifier.width(22.dp)
+                            )
+                            Text(
+                                text = "$planet is resonant",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Amber500
+                            )
+                        }
+                        Text(
+                            text = "Ascendant: " + asc.joinToString(", ") { "${it.aspectAngle}°" },
+                            fontSize = 11.sp,
+                            color = Slate100,
+                            modifier = Modifier.padding(start = 22.dp)
+                        )
+                        Text(
+                            text = "Midheaven: " + mc.joinToString(", ") { "${it.aspectAngle}° (natal ${it.planetName})" },
+                            fontSize = 11.sp,
+                            color = Slate100,
+                            modifier = Modifier.padding(start = 22.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Composable
 fun ExactHitsCard(
     hits: List<HitEvent>,
