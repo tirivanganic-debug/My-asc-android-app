@@ -154,15 +154,20 @@ fun SentimentGaugeCard(
 private val HardPlutoMagenta = Color(0xFFFF00FF)
 
 /**
- * v3.4: Active Ascendant Aspects, drawn as the opaque FRONT layer over the faded bar chart.
+ * Active Ascendant Aspects list (v3.6: now shown in a card below the Midheaven box).
  */
 @Composable
-fun ActiveAspectsLayer(aspects: List<AspectInfo>, modifier: Modifier = Modifier) {
+fun ActiveAspectsLayer(aspects: List<AspectInfo>, modifier: Modifier = Modifier, compact: Boolean = false) {
     val sorted = aspects.sortedByDescending { abs(it.contribution) }
 
     Column(
         modifier = modifier
-            .padding(start = 46.dp, end = 16.dp, top = 14.dp, bottom = 28.dp)
+            .padding(
+                start = if (compact) 12.dp else 46.dp,
+                end = if (compact) 12.dp else 16.dp,
+                top = if (compact) 12.dp else 14.dp,
+                bottom = if (compact) 12.dp else 28.dp
+            )
     ) {
         Text(
             text = "ACTIVE ASCENDANT ASPECTS (${aspects.size})",
@@ -339,82 +344,107 @@ fun ActiveMidheavenCard(currentBar: SentimentBar?) {
     }
 }
 
-/** v3.5: planets that appear in both the Active Ascendant and Active Midheaven aspect lists. */
+/**
+ * v3.6: Resonance list, drawn as the opaque FRONT layer over the faded bar chart.
+ * A planet is resonant when it appears in both the Active Ascendant and Active Midheaven lists.
+ */
 @Composable
-fun ResonanceCard(currentBar: SentimentBar?) {
-    if (currentBar == null) return
-
-    val ascByPlanet = currentBar.aspects.groupBy { it.planetName }
-    val mcByPlanet = currentBar.mcAspects.groupBy { it.planetName }
+fun ResonanceLayer(currentBar: SentimentBar?, showMc: Boolean, modifier: Modifier = Modifier) {
+    val ascByPlanet = currentBar?.aspects.orEmpty().groupBy { it.planetName }
+    val mcByPlanet = currentBar?.mcAspects.orEmpty().groupBy { it.planetName }
     val resonant = ascByPlanet.keys.filter { it in mcByPlanet }
         .sortedByDescending { p ->
             (ascByPlanet[p].orEmpty() + mcByPlanet[p].orEmpty()).sumOf { abs(it.contribution) }
         }
 
+    Column(modifier = modifier.padding(start = 46.dp, end = 16.dp, top = 14.dp, bottom = 28.dp)) {
+        Text(
+            text = "RESONANCE (${if (showMc) resonant.size else 0})",
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            color = Slate100
+        )
+        Text(
+            text = "Planets active on both the Ascendant and the Midheaven",
+            fontSize = 10.sp,
+            color = Slate400,
+            modifier = Modifier.padding(top = 2.dp)
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+
+        if (!showMc) {
+            Text(
+                text = "Turn on the MC birth chart overlay to see resonance",
+                fontSize = 11.sp,
+                color = Slate400,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        } else if (resonant.isEmpty()) {
+            Text(
+                text = "No resonant planets at this moment",
+                fontSize = 11.sp,
+                color = Slate400,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        } else {
+            resonant.forEach { planet ->
+                val asc = ascByPlanet[planet].orEmpty()
+                val mc = mcByPlanet[planet].orEmpty()
+                val glyph = asc.firstOrNull()?.glyph ?: ""
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp)
+                        .background(BgDark.copy(alpha = 0.72f), RoundedCornerShape(4.dp))
+                        .padding(horizontal = 4.dp, vertical = 3.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = glyph,
+                            fontSize = 15.sp,
+                            color = Amber500,
+                            modifier = Modifier.width(22.dp)
+                        )
+                        Text(
+                            text = "$planet is resonant",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Amber500
+                        )
+                    }
+                    Text(
+                        text = "Ascendant: " + asc.joinToString(", ") { "${it.aspectAngle}°" },
+                        fontSize = 11.sp,
+                        color = Slate100,
+                        modifier = Modifier.padding(start = 22.dp)
+                    )
+                    Text(
+                        text = "Midheaven: " + mc.joinToString(", ") { "${it.aspectAngle}° (natal ${it.planetName})" },
+                        fontSize = 11.sp,
+                        color = Slate100,
+                        modifier = Modifier.padding(start = 22.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/** v3.6: the Active Ascendant Aspects list as a normal card (sits below the Midheaven box). */
+@Composable
+fun ActiveAscendantCard(currentBar: SentimentBar?) {
+    if (currentBar == null) return
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = CardDark),
         shape = RoundedCornerShape(16.dp),
         border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(BorderDark))
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = "RESONANCE (${resonant.size})",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                color = Slate100
-            )
-            Text(
-                text = "Planets active on both the Ascendant and the Midheaven",
-                fontSize = 10.sp,
-                color = Slate400,
-                modifier = Modifier.padding(top = 2.dp)
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-
-            if (resonant.isEmpty()) {
-                Text(
-                    text = "No resonant planets at this moment",
-                    fontSize = 11.sp,
-                    color = Slate400,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            } else {
-                resonant.forEach { planet ->
-                    val asc = ascByPlanet[planet].orEmpty()
-                    val mc = mcByPlanet[planet].orEmpty()
-                    val glyph = asc.firstOrNull()?.glyph ?: ""
-                    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = glyph,
-                                fontSize = 15.sp,
-                                color = Amber500,
-                                modifier = Modifier.width(22.dp)
-                            )
-                            Text(
-                                text = "$planet is resonant",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Amber500
-                            )
-                        }
-                        Text(
-                            text = "Ascendant: " + asc.joinToString(", ") { "${it.aspectAngle}°" },
-                            fontSize = 11.sp,
-                            color = Slate100,
-                            modifier = Modifier.padding(start = 22.dp)
-                        )
-                        Text(
-                            text = "Midheaven: " + mc.joinToString(", ") { "${it.aspectAngle}° (natal ${it.planetName})" },
-                            fontSize = 11.sp,
-                            color = Slate100,
-                            modifier = Modifier.padding(start = 22.dp)
-                        )
-                    }
-                }
-            }
-        }
+        ActiveAspectsLayer(
+            aspects = currentBar.aspects,
+            modifier = Modifier.fillMaxWidth(),
+            compact = true
+        )
     }
 }
 

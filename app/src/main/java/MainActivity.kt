@@ -213,38 +213,6 @@ fun MainScreen(
             border = CardDefaults.outlinedCardBorder().copy(brush = androidx.compose.ui.graphics.SolidColor(BorderDark))
         ) {
             Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(
-                        onClick = {
-                            onHaptic()
-                            isLive = !isLive
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isLive) Emerald500 else CardDark
-                        ),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.height(34.dp)
-                    ) {
-                        Icon(
-                            imageVector = if (isLive) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = null,
-                            tint = if (isLive) Slate950 else Slate100,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(
-                            text = if (isLive) "Live Active" else "Resume Live",
-                            fontSize = 12.sp,
-                            color = if (isLive) Slate950 else Slate100,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-
                 // Location & Window Selectors
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -447,9 +415,10 @@ fun MainScreen(
                         },
                         modifier = Modifier.matchParentSize()
                     )
-                    // Front layer: opaque active aspects
-                    ActiveAspectsLayer(
-                        aspects = currentBar?.aspects ?: emptyList(),
+                    // Front layer: opaque Resonance list
+                    ResonanceLayer(
+                        currentBar = currentBar,
+                        showMc = showMc,
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 260.dp)
@@ -482,14 +451,49 @@ fun MainScreen(
                         }
                     }
                 }
+
+                // Live / Resume Live (just below the time stepper)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Button(
+                        onClick = {
+                            onHaptic()
+                            isLive = !isLive
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isLive) Emerald500 else CardDark
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.height(34.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isLive) Icons.Default.Pause else Icons.Default.PlayArrow,
+                            contentDescription = null,
+                            tint = if (isLive) Slate950 else Slate100,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = if (isLive) "Live Active" else "Resume Live",
+                            fontSize = 12.sp,
+                            color = if (isLive) Slate950 else Slate100,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
         }
 
         // v3.2: Active Midheaven Aspects (below the chart)
         if (showMc) {
             ActiveMidheavenCard(currentBar = currentBar)
-            ResonanceCard(currentBar = currentBar)
         }
+
+        // v3.6: Active Ascendant Aspects now sits below the Midheaven box
+        ActiveAscendantCard(currentBar = currentBar)
 
         // Exact Hits Card
         ExactHitsCard(
